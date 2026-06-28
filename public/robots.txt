@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://netgeniusconsult.co.uk/sitemap.xml
+Redirects: https://netgeniusconsult.co.uk/_redirects
