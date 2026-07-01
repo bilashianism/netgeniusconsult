@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './App.css';
+import { initTracking, trackPageView, trackLeadEvent } from './utils/tracking';
 
 // Custom SVG Icons (to keep it clean and ultra-fast without external font libraries)
 const SunIcon = () => (
@@ -1548,6 +1549,11 @@ function App() {
     }
   };
 
+  // Initialize tracking system on mount
+  useEffect(() => {
+    initTracking();
+  }, []);
+
   // Simple SPA Routing based on HTML5 History API (Clean Paths)
   useEffect(() => {
     const handleLocationChange = () => {
@@ -1570,6 +1576,9 @@ function App() {
       }
       window.scrollTo(0, 0);
       setMobileMenuOpen(false);
+
+      // Track page view event
+      trackPageView(window.location.pathname + window.location.hash);
     };
 
     window.addEventListener('popstate', handleLocationChange);
@@ -1615,6 +1624,9 @@ function App() {
         
         if (response.ok) {
           setFormSubmitted(true);
+          // Fire Lead Conversion Event to Google Analytics, Meta Pixel, and LinkedIn
+          trackLeadEvent(formData.service);
+          
           setFormData({ name: '', email: '', phone: '', service: 'seo', message: '' });
           setTimeout(() => {
             setFormSubmitted(false);
