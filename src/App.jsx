@@ -1531,6 +1531,7 @@ function App() {
   const [theme, setTheme] = useState('dark');
   const [currentPath, setCurrentPath] = useState('home');
   const [selectedService, setSelectedService] = useState(null);
+  const [selectedPostId, setSelectedPostId] = useState(null);
   const [showcaseFilter, setShowcaseFilter] = useState('All');
   const [activeTeamFilter, setActiveTeamFilter] = useState('All');
   const [formData, setFormData] = useState({ name: '', email: '', phone: '', service: 'seo', message: '' });
@@ -1558,21 +1559,25 @@ function App() {
   useEffect(() => {
     const handleLocationChange = () => {
       const path = window.location.pathname.replace(/^\//, '');
-      const validPaths = ['home', 'about', 'team', 'services', 'contact'];
+      const validPaths = ['home', 'about', 'team', 'services', 'blog', 'contact'];
       
       if (path.startsWith('services/')) {
         const svc = path.split('/')[1];
         setCurrentPath('services');
         setSelectedService(svc);
+        setSelectedPostId(null);
       } else if (validPaths.includes(path)) {
         setCurrentPath(path);
         setSelectedService(null);
+        setSelectedPostId(null);
       } else if (path === '') {
         setCurrentPath('home');
         setSelectedService(null);
+        setSelectedPostId(null);
       } else {
         setCurrentPath('home');
         setSelectedService(null);
+        setSelectedPostId(null);
       }
       window.scrollTo(0, 0);
       setMobileMenuOpen(false);
@@ -1747,6 +1752,7 @@ function App() {
             <button className={`nav-link ${currentPath === 'about' ? 'active' : ''}`} onClick={() => navigateTo('about')}>About</button>
             <button className={`nav-link ${currentPath === 'team' ? 'active' : ''}`} onClick={() => navigateTo('team')}>Team</button>
             <button className={`nav-link ${currentPath === 'services' ? 'active' : ''}`} onClick={() => navigateTo('services')}>Services</button>
+            <button className={`nav-link ${currentPath === 'blog' ? 'active' : ''}`} onClick={() => navigateTo('blog')}>Blog</button>
             <button className={`nav-link ${currentPath === 'contact' ? 'active' : ''}`} onClick={() => navigateTo('contact')}>Contact</button>
           </nav>
 
@@ -1771,6 +1777,7 @@ function App() {
           <button className="mobile-drawer-link" onClick={() => navigateTo('about')}>About</button>
           <button className="mobile-drawer-link" onClick={() => navigateTo('team')}>Team</button>
           <button className="mobile-drawer-link" onClick={() => navigateTo('services')}>Services</button>
+          <button className="mobile-drawer-link" onClick={() => navigateTo('blog')}>Blog</button>
           <button className="mobile-drawer-link" onClick={() => navigateTo('contact')}>Contact</button>
           <button className="btn btn-primary" onClick={() => navigateTo('contact')}>Book Consultation</button>
         </div>
@@ -2054,6 +2061,169 @@ function App() {
                 <button className="btn btn-primary" onClick={() => navigateTo('contact')}>Book Strategy Session</button>
               </div>
 
+            </div>
+          </section>
+        )}
+        {currentPath === 'blog' && (
+          <section className="blog-page section-padding animate-float">
+            <div className="container">
+              {selectedPostId === null ? (
+                // Blog Grid List
+                <div>
+                  <div className="section-header">
+                    <span className="badge">Insights & Strategies</span>
+                    <h2>NetGenius B2B Growth Blog</h2>
+                    <p className="section-subtitle">
+                      Actionable playbooks, industry updates, and deep dives on performance marketing, speed engineering, and B2B search dominance.
+                    </p>
+                  </div>
+                  
+                  <div className="blog-grid">
+                    <article className="blog-card" style={{ cursor: 'pointer' }} onClick={() => setSelectedPostId('speed-ranking-2026')}>
+                      <div className="blog-card-body">
+                        <div className="blog-card-meta">
+                          <span className="blog-card-badge" style={{ color: '#00D0FF', background: 'rgba(0, 208, 255, 0.1)' }}>SEO & Performance</span>
+                          <span>July 2, 2026</span>
+                        </div>
+                        <h3 className="blog-card-title">Why Site Speed is the #1 Google Ranking Factor for B2B Websites in 2026</h3>
+                        <p className="blog-card-excerpt">
+                          Discover why B2B sites that load in under 1 second win the SEO race and how legacy architectures like WordPress fall short compared to modern React configurations.
+                        </p>
+                        <div className="blog-card-footer">
+                          <span>Read full article →</span>
+                          <span>6 min read</span>
+                        </div>
+                      </div>
+                    </article>
+                  </div>
+                </div>
+              ) : (
+                // Article Detail Page
+                <div className="article-detail-container">
+                  <button className="back-to-blog" onClick={() => setSelectedPostId(null)}>
+                    ← Back to all articles
+                  </button>
+                  
+                  <header className="article-header">
+                    <div className="article-meta">
+                      <span className="blog-card-badge" style={{ color: '#00D0FF', background: 'rgba(0, 208, 255, 0.1)' }}>SEO & Performance</span>
+                      <span>Published: July 2, 2026</span>
+                      <span>• 6 min read</span>
+                    </div>
+                    <h1 className="article-title">Why Site Speed is the #1 Google Ranking Factor for B2B Websites in 2026</h1>
+                    
+                    <div className="article-author-info">
+                      <img 
+                        src="/team/sophia_taylor.png" 
+                        alt="Sophia Taylor" 
+                        className="article-author-avatar" 
+                      />
+                      <div>
+                        <div className="article-author-name">Sophia Taylor</div>
+                        <div className="article-author-role">Head of Search Engine Optimization</div>
+                      </div>
+                    </div>
+                  </header>
+                  
+                  <div className="article-body">
+                    <p>
+                      In the B2B landscape, speed is no longer just a metric for developer satisfaction; it is a primary driver of organic visibility and conversion rates. With Google's latest Core Web Vitals (CWV) updates, page load times have transformed from minor search tie-breakers into major ranking triggers that directly impact your pipeline.
+                    </p>
+                    
+                    <h2>1. The Core Web Vitals Equation (LCP, INP, CLS)</h2>
+                    <p>
+                      Google’s algorithm measures user experience through three key metrics. If your B2B website fails any of these thresholds, Google actively demotes your organic position in favor of faster competitors:
+                    </p>
+                    <ul>
+                      <li><strong>Largest Contentful Paint (LCP)</strong>: Measures loading performance. To provide a good user experience, LCP should occur within 2.5 seconds of when the page first starts loading.</li>
+                      <li><strong>Interaction to Next Paint (INP)</strong>: Measures responsiveness. INP tracks how quickly a page responds to user clicks or keypresses. An INP of 200 milliseconds or less shows good responsiveness.</li>
+                      <li><strong>Cumulative Layout Shift (CLS)</strong>: Measures visual stability. Pages must maintain a CLS score of less than 0.1 to avoid unexpected layout shifts that frustrate users.</li>
+                    </ul>
+                    
+                    <blockquote>
+                      "Websites that load in under 1 second see conversion rates up to 3x higher than sites that take 5 seconds to load. Speed is the ultimate user experience factor."
+                    </blockquote>
+                    
+                    <h2>2. The Business Impact: Conversion Rate Decay</h2>
+                    <p>
+                      In B2B marketing, user behavior is extremely fast-paced. A business decision-maker looking for a consulting partner has zero patience for lagging websites. Analysis of B2B traffic reveals a steep conversion decay curve as load times increase:
+                    </p>
+                    
+                    <table>
+                      <thead>
+                        <tr>
+                          <th>Load Time (Seconds)</th>
+                          <th>Average Bounce Rate (%)</th>
+                          <th>Conversion Impact</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td><strong>0.4s (NetGenius React)</strong></td>
+                          <td><strong>9.8%</strong></td>
+                          <td><strong>Baseline (100% Target)</strong></td>
+                        </tr>
+                        <tr>
+                          <td>1.5s</td>
+                          <td>22.0%</td>
+                          <td>-18% Conversion Loss</td>
+                        </tr>
+                        <tr>
+                          <td>3.0s</td>
+                          <td>38.0%</td>
+                          <td>-50% Conversion Loss</td>
+                        </tr>
+                        <tr>
+                          <td>5.0s (Average WordPress)</td>
+                          <td>53.0%</td>
+                          <td>-73% Conversion Loss</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                    
+                    <h2>3. WordPress vs. Custom React (The Architectural Gap)</h2>
+                    <p>
+                      Why do typical B2B websites run slowly? Most businesses build their digital presence on WordPress templates. While WordPress is easy to set up, it suffers from massive architectural issues that slow down load speeds:
+                    </p>
+                    <ol>
+                      <li><strong>Database Latency</strong>: WordPress generates pages dynamically by querying a database on every single visit. This introduces server response latency (TTFB) of 1.0s to 2.0s before the browser even gets the HTML.</li>
+                      <li><strong>Bloated Code</strong>: Themes and plugins load massive, unused CSS and JS files, delaying the browser from rendering the page.</li>
+                      <li><strong>Render-Blocking Resources</strong>: Layout shifts (CLS) are common as heavy plugins compile asynchronously in the browser.</li>
+                    </ol>
+                    <p>
+                      By contrast, our custom <strong>React + Vite</strong> framework compiles your entire website into static, pre-rendered assets. These assets are served globally via edge CDNs (like Cloudflare's network) with <strong>0ms database query time</strong>. The browser receives clean, optimized code instantly, rendering pages in <strong>0.4 seconds</strong>.
+                    </p>
+                    
+                    <div className="highlight-box">
+                      <h4>⚡ Try the Site-Speed Simulator</h4>
+                      <p>
+                        We have built an interactive side-by-side site speed simulator in our Services dashboard. You can watch how a React-Edge stack loads instantly in 0.4s with 99+ Lighthouse scores, while WordPress configurations trigger layout shifts and plugin bottlenecks.
+                      </p>
+                      <button className="btn btn-secondary mt-4" onClick={() => navigateTo('services')}>
+                        Open Speed Simulator
+                      </button>
+                    </div>
+                    
+                    <h2>4. How to Optimize Your B2B Site for 2026</h2>
+                    <p>
+                      To protect your organic positions and capture high-intent leads across the UK, USA, Canada, and Australia, we recommend executing these three technical optimizations immediately:
+                    </p>
+                    <ul>
+                      <li><strong>Migrate to Static Architectures</strong>: Replace database-reliant templates with pre-compiled Vite+React assets served over global CDNs.</li>
+                      <li><strong>Declare Location Schema</strong>: Add explicit JSON-LD LocalBusiness or ProfessionalService schemas to help search bots verify physical office coordinates.</li>
+                      <li><strong>Implement Clean Redirect Maps</strong>: When rebuilding, ensure all old WordPress URLs map via permanent 301 redirects to preserve historical backlink trust.</li>
+                    </ul>
+                    
+                    <div className="service-detail-cta glass-panel mt-12" style={{ padding: '30px', marginTop: '40px' }}>
+                      <h3>Ready to Upgrade Your Site Speed and Organic Rankings?</h3>
+                      <p>Book a consultation with our technology team to audit your current website speed and map out a custom React-Edge upgrade.</p>
+                      <button className="btn btn-primary mt-4" onClick={() => navigateTo('contact')}>
+                        Book a Free Speed & SEO Audit
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           </section>
         )}
