@@ -456,7 +456,7 @@ const teamMembers = [
     category: 'executive',
     bio: 'Zoya leads our B2B strategy and client delivery teams, ensuring projects align with target timelines and commercial metrics.',
     skills: ['Strategic Leadership', 'Client Delivery', 'Project Governance'],
-    img: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=400&h=400&fit=crop&crop=faces&q=80'
+    img: '/team/zoya_vance.png'
   },
   {
     name: 'Ritu Raka',
@@ -465,7 +465,7 @@ const teamMembers = [
     category: 'executive',
     bio: 'Ritu manages cross-functional client operations, optimizing workflows and setting quality standards for campaign execution.',
     skills: ['Operations Mgmt', 'Quality Assurance', 'Team Leadership'],
-    img: 'https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=400&h=400&fit=crop&crop=faces&q=80'
+    img: '/team/ritu_raka.png'
   },
   {
     name: 'Raj Gupta',
@@ -474,7 +474,7 @@ const teamMembers = [
     category: 'executive',
     bio: 'Raj directs corporate strategy and market entry campaigns, developing actionable growth roadmaps for enterprise clients.',
     skills: ['Market Expansion', 'Corporate Strategy', 'Growth Hack'],
-    img: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=400&h=400&fit=crop&crop=faces&q=80'
+    img: '/team/raj_gupta.png'
   },
   {
     name: 'Anika Sharma',
@@ -483,7 +483,7 @@ const teamMembers = [
     category: 'technical',
     bio: 'Anika heads our engineering team, focusing on building high-performance, accessible, and secure React/Next.js applications.',
     skills: ['React/Vite', 'Next.js', 'Architecture'],
-    img: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&h=400&fit=crop&crop=faces&q=80'
+    img: '/team/anika_sharma.png'
   },
   {
     name: 'Sarah Kabir',
@@ -492,7 +492,7 @@ const teamMembers = [
     category: 'technical',
     bio: 'Sarah manages our IT infrastructure, cloud environments, and internal security, maintaining 99.9% uptime across all servers.',
     skills: ['DevOps', 'Cloud Infrastructure', 'SysOps'],
-    img: 'https://images.unsplash.com/photo-1607746882042-944635dfe10e?w=400&h=400&fit=crop&crop=faces&q=80'
+    img: '/team/sarah_kabir.png'
   },
   {
     name: 'Sophia Taylor',
@@ -501,7 +501,7 @@ const teamMembers = [
     category: 'marketing',
     bio: 'Sophia designs and executes comprehensive enterprise SEO frameworks, managing keyword targeting, content gap audits, and technical fixes.',
     skills: ['Technical SEO', 'Content Auditing', 'Rankings'],
-    img: 'https://images.unsplash.com/photo-1567532939604-b6b5b0db2604?w=400&h=400&fit=crop&crop=faces&q=80'
+    img: '/team/sophia_taylor.png'
   },
   {
     name: 'Maya Jama',
@@ -510,7 +510,7 @@ const teamMembers = [
     category: 'marketing',
     bio: 'Maya creates and optimizes high-ROI paid media campaigns on Google Search, LinkedIn Ads, and Meta, focusing on B2B lead generation.',
     skills: ['Google Ads', 'Meta Ads', 'B2B Lead Gen'],
-    img: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400&h=400&fit=crop&crop=faces&q=80'
+    img: '/team/maya_jama.png'
   },
   {
     name: 'Tipu Arzu',
@@ -519,7 +519,7 @@ const teamMembers = [
     category: 'creative',
     bio: 'Tipu oversees our content strategy, copywriting guidelines, technical B2B articles, and search-optimized copies for high-impact growth.',
     skills: ['Copywriting', 'Content Strategy', 'B2B Copy'],
-    img: 'https://netgeniusconsult.co.uk/wp-content/uploads/2024/06/Tipu-600x600.png'
+    img: '/team/tipu_arzu.png'
   },
   {
     name: 'Saad Rahat',
@@ -528,7 +528,7 @@ const teamMembers = [
     category: 'operations',
     bio: 'Saad manages daily communication and project milestones for client accounts, ensuring feedback is integrated on-time.',
     skills: ['Client Relations', 'Account Mgmt', 'Milestone Tracking'],
-    img: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=400&fit=crop&crop=faces&q=80'
+    img: '/team/saad_rahat.png'
   },
   {
     name: 'Isabella Sermon',
@@ -537,7 +537,7 @@ const teamMembers = [
     category: 'marketing',
     bio: 'Isabella designs engaging organic social strategies, building brand recognition and community interaction for international clients.',
     skills: ['Content Strategy', 'Social Campaigns', 'Engagement'],
-    img: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&h=400&fit=crop&crop=faces&q=80'
+    img: '/team/isabella_sermon.png'
   },
   {
     name: 'Li Xiong',
@@ -546,7 +546,7 @@ const teamMembers = [
     category: 'finance',
     bio: 'Li manages company accounts and financial forecasting, overseeing international transactions and billing operations.',
     skills: ['Financial Planning', 'Accounts', 'Billing Systems'],
-    img: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&crop=faces&q=80'
+    img: '/team/li_xiong.png'
   }
 ];
 
