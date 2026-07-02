@@ -519,7 +519,7 @@ const teamMembers = [
     category: 'creative',
     bio: 'Tipu oversees our content strategy, copywriting guidelines, technical B2B articles, and search-optimized copies for high-impact growth.',
     skills: ['Copywriting', 'Content Strategy', 'B2B Copy'],
-    img: '/team/tipu_arzu.png'
+    img: '/team/tipu_arzu.jpg'
   },
   {
     name: 'Saad Rahat',
