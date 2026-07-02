@@ -60,6 +60,7 @@ export async function onRequestPost(context) {
           }
         }
       ],
+      test_event_code: 'TEST59759',
       access_token: ACCESS_TOKEN
     };
 
