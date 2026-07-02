@@ -130,3 +130,31 @@ export function trackLeadEvent(serviceName) {
     console.log(`[NetGenius Analytics] LinkedIn Insight logged conversion for Partner ID: ${LINKEDIN_ID}`);
   }
 }
+
+/**
+ * Dispatch server-to-server lead event via Cloudflare Pages Function (Meta Conversions API)
+ * @param {object} param0 - Leads dataset { name, email, phone, service }
+ */
+export async function trackServerLead({ name, email, phone, service }) {
+  console.log('[NetGenius Analytics] Initiating secure server-to-server Meta CAPI request...');
+  try {
+    const response = await fetch('/api/track-lead', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        name,
+        email,
+        phone,
+        service,
+        url: window.location.href,
+        userAgent: navigator.userAgent
+      })
+    });
+    const result = await response.json();
+    console.log('[NetGenius Analytics] Server CAPI response:', result);
+  } catch (error) {
+    console.error('[NetGenius Analytics] Server CAPI failed:', error);
+  }
+}

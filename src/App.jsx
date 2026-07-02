@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './App.css';
-import { initTracking, trackPageView, trackLeadEvent } from './utils/tracking';
+import { initTracking, trackPageView, trackLeadEvent, trackServerLead } from './utils/tracking';
 
 // Custom SVG Icons (to keep it clean and ultra-fast without external font libraries)
 const SunIcon = () => (
@@ -1631,6 +1631,14 @@ function App() {
           setFormSubmitted(true);
           // Fire Lead Conversion Event to Google Analytics, Meta Pixel, and LinkedIn
           trackLeadEvent(formData.service);
+          
+          // Securely send server-to-server lead conversion details to Meta via Cloudflare Pages Workers
+          trackServerLead({
+            name: formData.name,
+            email: formData.email,
+            phone: formData.phone,
+            service: formData.service
+          });
           
           setFormData({ name: '', email: '', phone: '', service: 'seo', message: '' });
           setTimeout(() => {
