@@ -1721,24 +1721,39 @@ function B2BGrowthAuditor({ navigateTo, activeTab, setActiveTab }) {
     <section className="tools-page section-padding animate-float">
       <div className="container">
         
-        {/* Tab Selector */}
-        <div className="tools-nav-tabs">
-          <button 
-            className={`tools-tab-btn ${activeTab === 'auditor' ? 'active' : ''}`}
-            onClick={() => setActiveTab('auditor')}
-          >
-            📊 Ad & Speed Conversion Auditor
-          </button>
-          <button 
-            className={`tools-tab-btn ${activeTab === 'schema' ? 'active' : ''}`}
-            onClick={() => setActiveTab('schema')}
-          >
-            🔍 Google Schema JSON-LD Generator
-          </button>
-        </div>
+        {activeTab === 'directory' && (
+          <div className="tools-directory-container">
+            <div className="section-header text-center">
+              <span className="badge">Growth Suite</span>
+              <h2>Free Marketing & Conversion Tools</h2>
+              <p className="section-subtitle">
+                Select a tool below to audit your performance, estimate wasted ad budgets, and generate rich snippet schemas.
+              </p>
+            </div>
 
-        {activeTab === 'auditor' ? (
+            <div className="tools-directory-grid">
+              <div className="tool-directory-card glass-panel highlight-hover" onClick={() => setActiveTab('auditor')}>
+                <div className="tool-card-icon">📊</div>
+                <h3>Ad & Speed Conversion Auditor</h3>
+                <p>Calculate exactly how much of your paid ad spend (Google/Meta) is wasted because of website load latency, and estimate your annual revenue recovery potential.</p>
+                <button className="btn btn-secondary mt-6 w-full">Launch Auditor ➔</button>
+              </div>
+
+              <div className="tool-directory-card glass-panel highlight-hover" onClick={() => setActiveTab('schema')}>
+                <div className="tool-card-icon">🔍</div>
+                <h3>Google Schema JSON-LD Generator</h3>
+                <p>Generate clean, validation-ready structured data markup (Organization, Local Business, and FAQs) to boost rich search results and organic visibility on Google.</p>
+                <button className="btn btn-secondary mt-6 w-full">Launch Generator ➔</button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'auditor' && (
           <div>
+            <button className="back-to-tools-btn" onClick={() => setActiveTab('directory')}>
+              ← Back to Tools Directory
+            </button>
             <div className="section-header text-center">
               <span className="badge">Auditor Tool</span>
               <h2>B2B Conversion & Ad Waste Auditor</h2>
@@ -1906,8 +1921,13 @@ function B2BGrowthAuditor({ navigateTo, activeTab, setActiveTab }) {
               </div>
             </div>
           </div>
-        ) : (
+        )}
+
+        {activeTab === 'schema' && (
           <div>
+            <button className="back-to-tools-btn" onClick={() => setActiveTab('directory')}>
+              ← Back to Tools Directory
+            </button>
             <div className="section-header text-center">
               <span className="badge">SEO Tool</span>
               <h2>Google Schema JSON-LD Generator</h2>
@@ -2179,7 +2199,7 @@ function App() {
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [isFormSending, setIsFormSending] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [activeToolTab, setActiveToolTab] = useState('auditor');
+  const [activeToolTab, setActiveToolTab] = useState('directory');
 
   // Toggle Theme
   const toggleTheme = () => {
@@ -2403,28 +2423,7 @@ function App() {
             <button className={`nav-link ${currentPath === 'team' ? 'active' : ''}`} onClick={() => navigateTo('team')}>Team</button>
             <button className={`nav-link ${currentPath === 'services' ? 'active' : ''}`} onClick={() => navigateTo('services')}>Services</button>
             <button className={`nav-link ${currentPath === 'blog' ? 'active' : ''}`} onClick={() => navigateTo('blog')}>Blog</button>
-            <div className="nav-dropdown-container">
-              <button 
-                className={`nav-link ${currentPath === 'tools' ? 'active' : ''}`} 
-                onClick={() => { navigateTo('tools'); setActiveToolTab('auditor'); }}
-              >
-                Free Tools <span className="nav-arrow" style={{ fontSize: '0.65rem', marginLeft: '4px' }}>▼</span>
-              </button>
-              <div className="nav-dropdown glass-panel">
-                <button 
-                  className="dropdown-item" 
-                  onClick={() => { navigateTo('tools'); setActiveToolTab('auditor'); }}
-                >
-                  📊 Conversion Auditor
-                </button>
-                <button 
-                  className="dropdown-item" 
-                  onClick={() => { navigateTo('tools'); setActiveToolTab('schema'); }}
-                >
-                  🔍 Schema Generator
-                </button>
-              </div>
-            </div>
+            <button className={`nav-link ${currentPath === 'tools' ? 'active' : ''}`} onClick={() => { navigateTo('tools'); setActiveToolTab('directory'); }}>Free Tools</button>
             <button className={`nav-link ${currentPath === 'contact' ? 'active' : ''}`} onClick={() => navigateTo('contact')}>Contact</button>
           </nav>
 
@@ -2450,8 +2449,7 @@ function App() {
           <button className="mobile-drawer-link" onClick={() => navigateTo('team')}>Team</button>
           <button className="mobile-drawer-link" onClick={() => navigateTo('services')}>Services</button>
           <button className="mobile-drawer-link" onClick={() => navigateTo('blog')}>Blog</button>
-          <button className="mobile-drawer-link" onClick={() => { navigateTo('tools'); setActiveToolTab('auditor'); }} style={{ color: 'var(--secondary)' }}>📊 Conversion Auditor</button>
-          <button className="mobile-drawer-link" onClick={() => { navigateTo('tools'); setActiveToolTab('schema'); }} style={{ color: 'var(--secondary)' }}>🔍 Schema Generator</button>
+          <button className="mobile-drawer-link" onClick={() => { navigateTo('tools'); setActiveToolTab('directory'); }}>Free Tools</button>
           <button className="mobile-drawer-link" onClick={() => navigateTo('contact')}>Contact</button>
           <button className="btn btn-primary" onClick={() => navigateTo('contact')}>Book Consultation</button>
         </div>
