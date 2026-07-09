@@ -2255,6 +2255,89 @@ function App() {
     return () => window.removeEventListener('popstate', handleLocationChange);
   }, []);
 
+  // Dynamic SEO Metadata and Schema injection
+  useEffect(() => {
+    let title = "Digital Marketing & B2B SEO Agency - NetGenius Consult Ltd";
+    let desc = "Accelerate business growth with a leading B2B digital marketing agency. Professional SEO campaigns, Google Ads PPC, and premium custom React development in the UK, US, CA, and AU.";
+    let canonical = "https://netgeniusconsult.co.uk/";
+
+    if (currentPath === 'about') {
+      title = "About Us | NetGenius Consult - Leading B2B Digital Marketing Agency";
+      desc = "Meet the digital marketing experts at NetGenius Consult. Learn about our data-driven approach, performance marketing, and B2B growth solutions.";
+      canonical = "https://netgeniusconsult.co.uk/about";
+    } else if (currentPath === 'team') {
+      title = "Meet the Team | NetGenius Consult Ltd";
+      desc = "Get to know the experts behind NetGenius Consult. Leading strategists, developers, and consultants dedicated to your business success.";
+      canonical = "https://netgeniusconsult.co.uk/team";
+    } else if (currentPath === 'services') {
+      title = "Our Services | NetGenius Consult - SEO, PPC & Custom React Web Development";
+      desc = "Explore our suite of premium B2B growth services, including speed-optimized React migrations, SEO campaign marketing, and lead-gen campaigns.";
+      canonical = "https://netgeniusconsult.co.uk/services";
+    } else if (currentPath === 'blog') {
+      title = "B2B Marketing & Growth Blog | NetGenius Consult";
+      desc = "Read the latest insights, strategies, and case studies on B2B digital marketing, search engine optimization, and custom web development.";
+      canonical = "https://netgeniusconsult.co.uk/blog";
+    } else if (currentPath === 'tools') {
+      title = "Free B2B Marketing, Speed & SEO Tools | NetGenius Consult";
+      desc = "Access our free interactive growth utilities: calculate your wasted ad spend due to page load speed latency, and generate schema JSON-LD markup.";
+      canonical = "https://netgeniusconsult.co.uk/tools";
+    } else if (currentPath === 'contact') {
+      title = "Book a Free Growth Consultation | NetGenius Consult";
+      desc = "Contact NetGenius Consult today to schedule your free performance audit and B2B growth strategy consultation. Speak with our experts.";
+      canonical = "https://netgeniusconsult.co.uk/contact";
+    }
+
+    // Apply updates
+    document.title = title;
+    
+    const descMeta = document.querySelector('meta[name="description"]');
+    if (descMeta) descMeta.setAttribute('content', desc);
+    
+    const canonicalLink = document.querySelector('link[rel="canonical"]');
+    if (canonicalLink) canonicalLink.setAttribute('href', canonical);
+    
+    const ogTitle = document.querySelector('meta[property="og:title"]');
+    if (ogTitle) ogTitle.setAttribute('content', title);
+    
+    const ogDesc = document.querySelector('meta[property="og:description"]');
+    if (ogDesc) ogDesc.setAttribute('content', desc);
+    
+    const ogUrl = document.querySelector('meta[property="og:url"]');
+    if (ogUrl) ogUrl.setAttribute('content', canonical);
+
+    // Inject dynamic structured data schema
+    let schemaJson = null;
+    if (currentPath === 'tools') {
+      schemaJson = {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "NetGenius Growth Tools Suite",
+        "description": "Interactive conversion auditor and Google Schema markup generator built to optimize B2B website performance and organic indexing.",
+        "url": "https://netgeniusconsult.co.uk/tools",
+        "applicationCategory": "BusinessApplication",
+        "operatingSystem": "All",
+        "browserRequirements": "Requires JavaScript. Requires HTML5.",
+        "creator": {
+          "@type": "Organization",
+          "name": "NetGenius Consult Ltd",
+          "url": "https://netgeniusconsult.co.uk"
+        }
+      };
+    }
+
+    const existingSchema = document.getElementById('dynamic-page-schema');
+    if (existingSchema) existingSchema.remove();
+
+    if (schemaJson) {
+      const script = document.createElement('script');
+      script.id = 'dynamic-page-schema';
+      script.type = 'application/ld+json';
+      script.text = JSON.stringify(schemaJson);
+      document.head.appendChild(script);
+    }
+
+  }, [currentPath]);
+
   const navigateTo = (path) => {
     const cleanPath = path === 'home' ? '/' : `/${path}`;
     window.history.pushState({}, '', cleanPath);
