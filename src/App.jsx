@@ -1528,8 +1528,7 @@ function InteractiveServiceShowcase() {
   );
 }
 
-function B2BGrowthAuditor({ navigateTo }) {
-  const [activeTab, setActiveTab] = useState('auditor');
+function B2BGrowthAuditor({ navigateTo, activeTab, setActiveTab }) {
   
   // Auditor States
   const [platform, setPlatform] = useState('wordpress');
@@ -2180,6 +2179,7 @@ function App() {
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [isFormSending, setIsFormSending] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [activeToolTab, setActiveToolTab] = useState('auditor');
 
   // Toggle Theme
   const toggleTheme = () => {
@@ -2403,7 +2403,28 @@ function App() {
             <button className={`nav-link ${currentPath === 'team' ? 'active' : ''}`} onClick={() => navigateTo('team')}>Team</button>
             <button className={`nav-link ${currentPath === 'services' ? 'active' : ''}`} onClick={() => navigateTo('services')}>Services</button>
             <button className={`nav-link ${currentPath === 'blog' ? 'active' : ''}`} onClick={() => navigateTo('blog')}>Blog</button>
-            <button className={`nav-link ${currentPath === 'tools' ? 'active' : ''}`} onClick={() => navigateTo('tools')}>Free Tools</button>
+            <div className="nav-dropdown-container">
+              <button 
+                className={`nav-link ${currentPath === 'tools' ? 'active' : ''}`} 
+                onClick={() => { navigateTo('tools'); setActiveToolTab('auditor'); }}
+              >
+                Free Tools <span className="nav-arrow" style={{ fontSize: '0.65rem', marginLeft: '4px' }}>▼</span>
+              </button>
+              <div className="nav-dropdown glass-panel">
+                <button 
+                  className="dropdown-item" 
+                  onClick={() => { navigateTo('tools'); setActiveToolTab('auditor'); }}
+                >
+                  📊 Conversion Auditor
+                </button>
+                <button 
+                  className="dropdown-item" 
+                  onClick={() => { navigateTo('tools'); setActiveToolTab('schema'); }}
+                >
+                  🔍 Schema Generator
+                </button>
+              </div>
+            </div>
             <button className={`nav-link ${currentPath === 'contact' ? 'active' : ''}`} onClick={() => navigateTo('contact')}>Contact</button>
           </nav>
 
@@ -2429,7 +2450,8 @@ function App() {
           <button className="mobile-drawer-link" onClick={() => navigateTo('team')}>Team</button>
           <button className="mobile-drawer-link" onClick={() => navigateTo('services')}>Services</button>
           <button className="mobile-drawer-link" onClick={() => navigateTo('blog')}>Blog</button>
-          <button className="mobile-drawer-link" onClick={() => navigateTo('tools')}>Free Tools</button>
+          <button className="mobile-drawer-link" onClick={() => { navigateTo('tools'); setActiveToolTab('auditor'); }} style={{ color: 'var(--secondary)' }}>📊 Conversion Auditor</button>
+          <button className="mobile-drawer-link" onClick={() => { navigateTo('tools'); setActiveToolTab('schema'); }} style={{ color: 'var(--secondary)' }}>🔍 Schema Generator</button>
           <button className="mobile-drawer-link" onClick={() => navigateTo('contact')}>Contact</button>
           <button className="btn btn-primary" onClick={() => navigateTo('contact')}>Book Consultation</button>
         </div>
@@ -3140,7 +3162,7 @@ function App() {
           </section>
         )}
         {currentPath === 'tools' && (
-          <B2BGrowthAuditor navigateTo={navigateTo} />
+          <B2BGrowthAuditor navigateTo={navigateTo} activeTab={activeToolTab} setActiveTab={setActiveToolTab} />
         )}
         {currentPath === 'contact' && (
           <section className="contact-page section-padding">
