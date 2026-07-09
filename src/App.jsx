@@ -1527,6 +1527,265 @@ function InteractiveServiceShowcase() {
     </div>
   );
 }
+
+function B2BGrowthAuditor({ navigateTo }) {
+  const [platform, setPlatform] = useState('wordpress');
+  const [traffic, setTraffic] = useState(10000);
+  const [adSpend, setAdSpend] = useState(2000);
+  const [speed, setSpeed] = useState(3.5);
+  
+  const [auditForm, setAuditForm] = useState({ name: '', email: '', phone: '', company: '' });
+  const [submitted, setSubmitted] = useState(false);
+  const [isSending, setIsSending] = useState(false);
+
+  // Derived metrics
+  const getBounceProbability = (s) => {
+    if (s < 1.0) return 0.10;
+    if (s < 2.0) return 0.15;
+    if (s < 3.0) return 0.24;
+    if (s < 5.0) return 0.38;
+    return 0.53;
+  };
+
+  const getConversionRate = (s) => {
+    if (s < 1.0) return 0.025;
+    if (s < 2.0) return 0.020;
+    if (s < 3.0) return 0.015;
+    if (s < 5.0) return 0.009;
+    return 0.004;
+  };
+
+  const bounceRate = getBounceProbability(speed);
+  const currentConv = getConversionRate(speed);
+  const targetConv = 0.025; // React 0.4s benchmark conversion
+
+  // Calculations
+  const wastedAdSpend = Math.round(adSpend * (bounceRate - 0.10));
+  const currentLeads = Math.round(traffic * (1 - bounceRate) * currentConv);
+  const targetLeads = Math.round(traffic * 0.9 * targetConv);
+  const leadsLost = Math.max(0, targetLeads - currentLeads);
+  const leadValue = 500; // Average lead value £500
+  const annualRevLost = leadsLost * leadValue * 12;
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setAuditForm(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleAuditSubmit = async (e) => {
+    e.preventDefault();
+    setIsSending(true);
+    
+    try {
+      if (typeof window.fbq === 'function') {
+        window.fbq('track', 'Lead', {
+          content_name: 'B2B Performance Audit',
+          value: annualRevLost,
+          currency: 'GBP'
+        });
+      }
+      
+      if (typeof window.gtag === 'function') {
+        window.gtag('event', 'generate_lead', {
+          event_category: 'Engagement',
+          event_label: 'B2B Performance Audit',
+          value: annualRevLost
+        });
+      }
+
+      await trackServerLead({
+        name: auditForm.name,
+        email: auditForm.email,
+        phone: auditForm.phone,
+        service: 'web-design-development',
+        message: `B2B Audit Results: Platform: ${platform}, Traffic: ${traffic}, Ad Spend: £${adSpend}, Speed: ${speed}s. Wasted Spend: £${wastedAdSpend}, Leads Lost: ${leadsLost}, Annual Rev Lost: £${annualRevLost}`
+      });
+      
+      setSubmitted(true);
+    } catch (err) {
+      console.error('Audit submit error:', err);
+      setSubmitted(true);
+    } finally {
+      setIsSending(false);
+    }
+  };
+
+  return (
+    <section className="tools-page section-padding animate-float">
+      <div className="container">
+        <div className="section-header text-center">
+          <span className="badge">Interactive Tools</span>
+          <h2>B2B Conversion & Ad Waste Auditor</h2>
+          <p className="section-subtitle">
+            Calculate exactly how much ad spend you are wasting and how many leads you are losing due to website load speed latency.
+          </p>
+        </div>
+
+        <div className="auditor-grid">
+          {/* Inputs Column */}
+          <div className="auditor-card glass-panel">
+            <h3>Configure Your Website Metrics</h3>
+            
+            <div className="form-group">
+              <label>Current Website Platform</label>
+              <select value={platform} onChange={(e) => setPlatform(e.target.value)} className="form-select-tools">
+                <option value="wordpress">WordPress (Dynamic PHP)</option>
+                <option value="shopify">Shopify (Hosted Cloud)</option>
+                <option value="wix">Wix / Squarespace</option>
+                <option value="custom">Custom React / Static Site</option>
+              </select>
+            </div>
+
+            <div className="form-group">
+              <label>Monthly Website Traffic (Visitors): <strong>{traffic.toLocaleString()}</strong></label>
+              <input 
+                type="range" 
+                min="1000" 
+                max="100000" 
+                step="1000" 
+                value={traffic} 
+                className="form-slider-tools"
+                onChange={(e) => setTraffic(Number(e.target.value))} 
+              />
+            </div>
+
+            <div className="form-group">
+              <label>Monthly Paid Ad Spend (Google/Meta): <strong>£{adSpend.toLocaleString()}</strong></label>
+              <input 
+                type="range" 
+                min="0" 
+                max="25000" 
+                step="500" 
+                value={adSpend} 
+                className="form-slider-tools"
+                onChange={(e) => setAdSpend(Number(e.target.value))} 
+              />
+            </div>
+
+            <div className="form-group">
+              <label>Current Load Speed: <strong>{speed} seconds</strong></label>
+              <input 
+                type="range" 
+                min="0.4" 
+                max="10.0" 
+                step="0.1" 
+                value={speed} 
+                className="form-slider-tools"
+                onChange={(e) => setSpeed(Number(e.target.value))} 
+              />
+              <div className="speed-gauge-wrap">
+                <div 
+                  className="speed-gauge-bar" 
+                  style={{ 
+                    width: `${(speed / 10) * 100}%`,
+                    background: speed < 1.5 ? '#00D0FF' : speed < 3.0 ? '#E17A00' : '#ff4d4d'
+                  }} 
+                />
+              </div>
+              <div className="speed-labels">
+                <span className="fast">0.4s (React Limit)</span>
+                <span className="slow">10.0s (Severe Latency)</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Results Column */}
+          <div className="results-card glass-panel highlight-border">
+            <h3>Audit Assessment</h3>
+            
+            <div className="result-metric-row">
+              <div className="result-metric-box">
+                <span className="metric-label">Estimated Ad Click Waste</span>
+                <span className="metric-value text-red">
+                  £{wastedAdSpend.toLocaleString()} <span className="period">/ month</span>
+                </span>
+                <p className="metric-desc">Money thrown away on users who clicked your ads but bounced before the page loaded.</p>
+              </div>
+
+              <div className="result-metric-box">
+                <span className="metric-label">Estimated Leads Lost</span>
+                <span className="metric-value text-orange">
+                  {leadsLost} <span className="period">leads / month</span>
+                </span>
+                <p className="metric-desc">Inquiries lost due to high friction and latency in loading forms.</p>
+              </div>
+            </div>
+
+            <div className="revenue-lost-box">
+              <span className="rev-label">Annual Revenue Recovery Potential</span>
+              <span className="rev-value">£{annualRevLost.toLocaleString()}</span>
+              <p className="rev-desc">Estimated revenue lost annually based on a standard B2B client value of £500.</p>
+            </div>
+
+            {!submitted ? (
+              <form onSubmit={handleAuditSubmit} className="audit-lead-form">
+                <h4>Receive Custom Audit Report & Action Plan</h4>
+                <p className="form-intro">Submit your details to get a detailed performance audit PDF and book a free speed consulting session with Zoya.</p>
+                
+                <div className="audit-form-grid">
+                  <div className="form-group">
+                    <input 
+                      type="text" 
+                      name="name" 
+                      placeholder="Your Name *" 
+                      required 
+                      className="form-input-tools"
+                      value={auditForm.name}
+                      onChange={handleInputChange}
+                    />
+                  </div>
+                  <div className="form-group">
+                    <input 
+                      type="email" 
+                      name="email" 
+                      placeholder="Your Email *" 
+                      required 
+                      className="form-input-tools"
+                      value={auditForm.email}
+                      onChange={handleInputChange}
+                    />
+                  </div>
+                  <div className="form-group">
+                    <input 
+                      type="tel" 
+                      name="phone" 
+                      placeholder="Phone Number *" 
+                      required 
+                      className="form-input-tools"
+                      value={auditForm.phone}
+                      onChange={handleInputChange}
+                    />
+                  </div>
+                  <div className="form-group">
+                    <input 
+                      type="text" 
+                      name="company" 
+                      placeholder="Company Name *" 
+                      required 
+                      className="form-input-tools"
+                      value={auditForm.company}
+                      onChange={handleInputChange}
+                    />
+                  </div>
+                </div>
+
+                <button type="submit" className="btn btn-primary w-full mt-4" disabled={isSending}>
+                  {isSending ? 'Generating Report...' : 'Email My Audit & Book Free Call'}
+                </button>
+              </form>
+            ) : (
+              <div className="audit-success-msg">
+                <h4>✓ Audit Saved Successfully!</h4>
+                <p>Thank you. Zoya is compiling your performance audit report. A consultant will reach out to you within 24 hours to present the findings and layout the React migration plan.</p>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function App() {
   const [theme, setTheme] = useState('dark');
   const [currentPath, setCurrentPath] = useState('home');
@@ -1559,7 +1818,7 @@ function App() {
   useEffect(() => {
     const handleLocationChange = () => {
       const path = window.location.pathname.replace(/^\//, '');
-      const validPaths = ['home', 'about', 'team', 'services', 'blog', 'contact'];
+      const validPaths = ['home', 'about', 'team', 'services', 'blog', 'contact', 'tools'];
       
       if (path.startsWith('services/')) {
         const svc = path.split('/')[1];
@@ -1761,6 +2020,7 @@ function App() {
             <button className={`nav-link ${currentPath === 'team' ? 'active' : ''}`} onClick={() => navigateTo('team')}>Team</button>
             <button className={`nav-link ${currentPath === 'services' ? 'active' : ''}`} onClick={() => navigateTo('services')}>Services</button>
             <button className={`nav-link ${currentPath === 'blog' ? 'active' : ''}`} onClick={() => navigateTo('blog')}>Blog</button>
+            <button className={`nav-link ${currentPath === 'tools' ? 'active' : ''}`} onClick={() => navigateTo('tools')}>Free Tools</button>
             <button className={`nav-link ${currentPath === 'contact' ? 'active' : ''}`} onClick={() => navigateTo('contact')}>Contact</button>
           </nav>
 
@@ -1786,6 +2046,7 @@ function App() {
           <button className="mobile-drawer-link" onClick={() => navigateTo('team')}>Team</button>
           <button className="mobile-drawer-link" onClick={() => navigateTo('services')}>Services</button>
           <button className="mobile-drawer-link" onClick={() => navigateTo('blog')}>Blog</button>
+          <button className="mobile-drawer-link" onClick={() => navigateTo('tools')}>Free Tools</button>
           <button className="mobile-drawer-link" onClick={() => navigateTo('contact')}>Contact</button>
           <button className="btn btn-primary" onClick={() => navigateTo('contact')}>Book Consultation</button>
         </div>
@@ -2494,6 +2755,9 @@ function App() {
               )}
             </div>
           </section>
+        )}
+        {currentPath === 'tools' && (
+          <B2BGrowthAuditor navigateTo={navigateTo} />
         )}
         {currentPath === 'contact' && (
           <section className="contact-page section-padding">

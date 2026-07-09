@@ -2593,5 +2593,284 @@
   font-size: 1.1rem;
 }
 
+/* ==========================================================================
+   B2B GROWTH & CONVERSION AUDITOR PAGE (FREE TOOLS)
+   ========================================================================== */
+.tools-page {
+  background: var(--bg);
+  min-height: 85vh;
+}
+
+.auditor-grid {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  gap: 30px;
+  margin-top: 40px;
+  align-items: start;
+}
+
+@media (max-width: 968px) {
+  .auditor-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.auditor-card, .results-card {
+  padding: 40px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.auditor-card h3, .results-card h3 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 30px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  padding-bottom: 15px;
+}
+
+.form-select-tools {
+  width: 100%;
+  padding: 14px 20px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #fff;
+  font-size: 1rem;
+  outline: none;
+  transition: all 0.3s ease;
+  margin-top: 8px;
+}
+
+.form-select-tools:focus {
+  border-color: var(--secondary);
+  box-shadow: 0 0 10px rgba(0, 208, 255, 0.15);
+}
+
+.form-slider-tools {
+  width: 100%;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 5px;
+  outline: none;
+  margin-top: 15px;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.form-slider-tools::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--secondary);
+  cursor: pointer;
+  box-shadow: 0 0 10px rgba(0, 208, 255, 0.4);
+  transition: transform 0.2s ease;
+}
+
+.form-slider-tools::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+}
+
+.speed-gauge-wrap {
+  width: 100%;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+  margin-top: 20px;
+  overflow: hidden;
+  position: relative;
+}
+
+.speed-gauge-bar {
+  height: 100%;
+  transition: width 0.3s ease, background 0.3s ease;
+}
+
+.speed-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-top: 8px;
+}
+
+/* Results Display styles */
+.results-card.highlight-border {
+  border: 1px solid rgba(0, 208, 255, 0.2);
+  box-shadow: 0 10px 40px rgba(0, 208, 255, 0.03);
+}
+
+.result-metric-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-bottom: 25px;
+}
+
+@media (max-width: 480px) {
+  .result-metric-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+.result-metric-box {
+  background: rgba(255, 255, 255, 0.01);
+  border: 1px solid rgba(255, 255, 255, 0.03);
+  padding: 20px;
+  border-radius: 12px;
+}
+
+.metric-label {
+  display: block;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+}
+
+.metric-value {
+  display: block;
+  font-size: 1.8rem;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.metric-value .period {
+  font-size: 0.9rem;
+  font-weight: 400;
+  color: var(--text-muted);
+}
+
+.text-red {
+  color: #ff4d4d;
+  text-shadow: 0 0 15px rgba(255, 77, 77, 0.15);
+}
+
+.text-orange {
+  color: #E17A00;
+  text-shadow: 0 0 15px rgba(225, 122, 0, 0.15);
+}
+
+.metric-desc {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-top: 8px;
+  line-height: 1.4;
+}
+
+.revenue-lost-box {
+  background: rgba(0, 208, 255, 0.03);
+  border: 1px solid rgba(0, 208, 255, 0.15);
+  padding: 25px;
+  border-radius: 15px;
+  text-align: center;
+  margin-bottom: 35px;
+}
+
+.rev-label {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--secondary);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 5px;
+}
+
+.rev-value {
+  display: block;
+  font-size: 2.5rem;
+  font-weight: 900;
+  color: #fff;
+  text-shadow: 0 0 20px rgba(0, 208, 255, 0.25);
+  margin-bottom: 5px;
+}
+
+.rev-desc {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+/* Audit form styling */
+.audit-lead-form {
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  padding-top: 30px;
+}
+
+.audit-lead-form h4 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #fff;
+  margin-bottom: 8px;
+}
+
+.form-intro {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-bottom: 20px;
+  line-height: 1.4;
+}
+
+.audit-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+}
+
+@media (max-width: 480px) {
+  .audit-form-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.form-input-tools {
+  width: 100%;
+  padding: 12px 16px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #fff;
+  font-size: 0.9rem;
+  outline: none;
+  transition: all 0.3s ease;
+}
+
+.form-input-tools:focus {
+  border-color: var(--secondary);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.w-full {
+  width: 100%;
+}
+
+.audit-success-msg {
+  text-align: center;
+  background: rgba(16, 185, 129, 0.03);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+  padding: 30px;
+  border-radius: 15px;
+  margin-top: 15px;
+}
+
+.audit-success-msg h4 {
+  color: #10B981;
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.audit-success-msg p {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
 
 
