@@ -2120,6 +2120,23 @@ function App() {
                         </div>
                       </div>
                     </article>
+
+                    <article className="blog-card" style={{ cursor: 'pointer' }} onClick={() => setSelectedPostId('wp-latency-vs-react')}>
+                      <div className="blog-card-body">
+                        <div className="blog-card-meta">
+                          <span className="blog-card-badge" style={{ color: '#8B5CF6', background: 'rgba(139, 92, 246, 0.1)' }}>Engineering</span>
+                          <span>July 9, 2026</span>
+                        </div>
+                        <h3 className="blog-card-title">WordPress Database Latency vs. React Static Compilations: An Architectural Guide</h3>
+                        <p className="blog-card-excerpt">
+                          Analyze the performance bottleneck of dynamic database queries in WordPress vs. the zero-latency speed of pre-rendered React static builds served on the edge.
+                        </p>
+                        <div className="blog-card-footer">
+                          <span>Read full article →</span>
+                          <span>7 min read</span>
+                        </div>
+                      </div>
+                    </article>
                   </div>
                 </div>
               ) : (
@@ -2350,6 +2367,124 @@ function App() {
                           <p>Let our PPC team review your current Google & Meta ad accounts. We will identify wasted spend, verify tracking pixel conversions, and build high-speed landing pages that double your leads.</p>
                           <button className="btn btn-primary mt-4" onClick={() => navigateTo('contact')}>
                             Book a Free PPC & Conversion Audit
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {selectedPostId === 'wp-latency-vs-react' && (
+                    <div className="article-detail-container">
+                      <button className="back-to-blog" onClick={() => setSelectedPostId(null)}>
+                        ← Back to all articles
+                      </button>
+                      
+                      <header className="article-header">
+                        <div className="article-meta">
+                          <span className="blog-card-badge" style={{ color: '#8B5CF6', background: 'rgba(139, 92, 246, 0.1)' }}>Engineering</span>
+                          <span>Published: July 9, 2026</span>
+                          <span>• 7 min read</span>
+                        </div>
+                        <h1 className="article-title">WordPress Database Latency vs. React Static Compilations: An Architectural Guide</h1>
+                        
+                        <div className="article-author-info">
+                          <img 
+                            src="/team/sophia_taylor.png" 
+                            alt="Sophia Taylor" 
+                            className="article-author-avatar" 
+                          />
+                          <div>
+                            <div className="article-author-name">Sophia Taylor</div>
+                            <div className="article-author-role">Head of Search Engine Optimization</div>
+                          </div>
+                        </div>
+                      </header>
+                      
+                      <div className="article-body">
+                        <p>
+                          For over a decade, WordPress has been the default content management system for B2B websites. However, as Google's Core Web Vitals elevate loading speeds to primary ranking factors, the underlying database-driven architecture of WordPress has become a critical bottleneck.
+                        </p>
+                        
+                        <h2>1. How WordPress Handles a Request: The Latency Chain</h2>
+                        <p>
+                          Every time a prospect clicks your website link, WordPress compiles the page from scratch on the fly. This triggers a heavy chain of server operations:
+                        </p>
+                        <ol>
+                          <li><strong>HTTP Request Received</strong>: The user's browser requests a page from your server.</li>
+                          <li><strong>PHP Core & Theme Engine Loads</strong>: The server starts executing PHP scripts to construct the page layout.</li>
+                          <li><strong>Database Queries (MySQL)</strong>: The server makes dozens of round-trip database queries to fetch page metadata, menu configurations, widget details, and content body.</li>
+                          <li><strong>CSS and JS Compilation</strong>: Plugins inject their own style blocks and script libraries.</li>
+                          <li><strong>HTML Output Sent</strong>: The server finally packages the compiled page and streams it back to the client.</li>
+                        </ol>
+                        <p>
+                          This process introduces a heavy <strong>Time to First Byte (TTFB)</strong> delay (often 1.5s to 3.0s), meaning the user's browser displays a blank white screen for seconds before loading begins.
+                        </p>
+                        
+                        <h2>2. How React Static Compilations Bypass the Database</h2>
+                        <p>
+                          Our custom <strong>React + Vite</strong> architecture utilizes static pre-rendering. Instead of generating the page <em>when a visitor arrives</em>, the entire site is pre-compiled into static HTML, CSS, and JS assets <em>during the build process</em>.
+                        </p>
+                        <ul>
+                          <li><strong>0ms Database Queries</strong>: There is no MySQL database queried during a visit.</li>
+                          <li><strong>Edge Network Delivery</strong>: The pre-rendered static assets are cached and distributed globally on Cloudflare's edge CDN nodes. When a London user visits, they receive the page directly from a London server; if a Dhaka user visits, it comes from a Dhaka hub.</li>
+                          <li><strong>TTFB under 50ms</strong>: The server response time drops to near-zero, rendering pages in <strong>0.4 seconds</strong>.</li>
+                        </ul>
+
+                        <blockquote>
+                          "Dynamic page generation on slow servers is the silent killer of B2B organic traffic. If your server response time exceeds 1 second, Googlebot will throttle its crawl rate, directly reducing your indexing capability."
+                        </blockquote>
+
+                        <h2>3. The Performance Breakdown: WordPress vs. React</h2>
+                        <p>
+                          Here is the performance metric comparison derived from our network simulations:
+                        </p>
+                        
+                        <table>
+                          <thead>
+                            <tr>
+                              <th>Metric</th>
+                              <th>WordPress (Typical B2B Site)</th>
+                              <th>React (NetGenius Rebuild)</th>
+                              <th>SEO Impact</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr>
+                              <td><strong>Server Response (TTFB)</strong></td>
+                              <td>1.8 seconds</td>
+                              <td><strong>35 milliseconds</strong></td>
+                              <td>Direct Googlebot crawl rate boost</td>
+                            </tr>
+                            <tr>
+                              <td><strong>Largest Contentful Paint</strong></td>
+                              <td>4.2 seconds</td>
+                              <td><strong>0.4 seconds</strong></td>
+                              <td>Passes Google's Core Web Vitals</td>
+                            </tr>
+                            <tr>
+                              <td><strong>Lighthouse Score</strong></td>
+                              <td>45/100 (Poor)</td>
+                              <td><strong>99/100 (Optimal)</strong></td>
+                              <td>Maximum mobile ranking signals</td>
+                            </tr>
+                          </tbody>
+                        </table>
+
+                        <h2>4. Migration Strategy: Moving Without SEO Loss</h2>
+                        <p>
+                          If your business is migrating from WordPress to a fast React architecture, you must follow a strict migration plan to safeguard historical SEO rankings:
+                        </p>
+                        <ul>
+                          <li><strong>Map All Permalinks</strong>: Ensure your new routes map perfectly to your old WordPress URLs.</li>
+                          <li><strong>Configure 301 Redirects</strong>: If paths change, set up permanent redirects in a <code>_redirects</code> file on your CDN to pass on link equity.</li>
+                          <li><strong>Synchronize Canonical Tags</strong>: Ensure all page heads declare correct self-referencing canonical tags to prevent duplicate content flags.</li>
+                        </ul>
+                        
+                        <div className="service-detail-cta glass-panel mt-12" style={{ padding: '30px', marginTop: '40px' }}>
+                          <h3>Ready to Eliminate Database Latency?</h3>
+                          <p>Let our engineering team audit your current website speed and design a custom, high-performance React migration roadmap for your B2B enterprise.</p>
+                          <button className="btn btn-primary mt-4" onClick={() => navigateTo('contact')}>
+                            Book a Free Architecture Audit
                           </button>
                         </div>
                       </div>
