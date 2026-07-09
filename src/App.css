@@ -2872,5 +2872,47 @@
   line-height: 1.5;
 }
 
+/* Tools Tab Navigation */
+.tools-nav-tabs {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-bottom: 50px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  padding-bottom: 20px;
+}
+
+@media (max-width: 768px) {
+  .tools-nav-tabs {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+.tools-tab-btn {
+  padding: 16px 28px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.01);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  color: var(--text-muted);
+  font-size: 1.05rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.tools-tab-btn:hover {
+  background: rgba(255, 255, 255, 0.03);
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.tools-tab-btn.active {
+  background: rgba(0, 208, 255, 0.03);
+  border-color: var(--secondary);
+  color: #fff;
+  box-shadow: 0 5px 20px rgba(0, 208, 255, 0.1);
+}
+
 
 

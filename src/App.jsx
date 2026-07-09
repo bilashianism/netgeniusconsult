@@ -1529,6 +1529,9 @@ function InteractiveServiceShowcase() {
 }
 
 function B2BGrowthAuditor({ navigateTo }) {
+  const [activeTab, setActiveTab] = useState('auditor');
+  
+  // Auditor States
   const [platform, setPlatform] = useState('wordpress');
   const [traffic, setTraffic] = useState(10000);
   const [adSpend, setAdSpend] = useState(2000);
@@ -1538,7 +1541,35 @@ function B2BGrowthAuditor({ navigateTo }) {
   const [submitted, setSubmitted] = useState(false);
   const [isSending, setIsSending] = useState(false);
 
-  // Derived metrics
+  // Schema Generator States
+  const [schemaType, setSchemaType] = useState('organization');
+  const [copied, setCopied] = useState(false);
+  
+  // Organization Schema Fields
+  const [orgName, setOrgName] = useState('NetGenius Consult');
+  const [orgUrl, setOrgUrl] = useState('https://netgeniusconsult.co.uk');
+  const [orgLogo, setOrgLogo] = useState('https://netgeniusconsult.co.uk/logo.png');
+  const [orgSocials, setOrgSocials] = useState('https://linkedin.com/company/netgeniusconsult, https://facebook.com/netgenius');
+  
+  // Local Business Schema Fields
+  const [bizName, setBizName] = useState('NetGenius Consult London');
+  const [bizAddress, setBizAddress] = useState('128 City Road');
+  const [bizCity, setBizCity] = useState('London');
+  const [bizZip, setBizZip] = useState('EC1V 2NX');
+  const [bizPhone, setBizPhone] = useState('+44 20 7946 0958');
+  const [bizHours, setBizHours] = useState('Mo-Fr 09:00-18:00');
+
+  // FAQ Schema Fields
+  const [faqs, setFaqs] = useState([
+    { question: 'What is B2B web speed optimization?', answer: 'It is the process of rebuilding pages in frameworks like React to ensure load times under 1 second, reducing bounce rates and maximizing conversions.' },
+    { question: 'How does high latency impact Meta ad ROI?', answer: 'Slow sites leak traffic. Up to 40% of users who click a paid ad will bounce if the landing page takes longer than 3 seconds to load.' }
+  ]);
+
+  const [schemaForm, setSchemaForm] = useState({ name: '', email: '', website: '' });
+  const [schemaSubmitted, setSchemaSubmitted] = useState(false);
+  const [isSchemaSending, setIsSchemaSending] = useState(false);
+
+  // Auditor Calculations
   const getBounceProbability = (s) => {
     if (s < 1.0) return 0.10;
     if (s < 2.0) return 0.15;
@@ -1557,14 +1588,13 @@ function B2BGrowthAuditor({ navigateTo }) {
 
   const bounceRate = getBounceProbability(speed);
   const currentConv = getConversionRate(speed);
-  const targetConv = 0.025; // React 0.4s benchmark conversion
+  const targetConv = 0.025;
 
-  // Calculations
   const wastedAdSpend = Math.round(adSpend * (bounceRate - 0.10));
   const currentLeads = Math.round(traffic * (1 - bounceRate) * currentConv);
   const targetLeads = Math.round(traffic * 0.9 * targetConv);
   const leadsLost = Math.max(0, targetLeads - currentLeads);
-  const leadValue = 500; // Average lead value £500
+  const leadValue = 500;
   const annualRevLost = leadsLost * leadValue * 12;
 
   const handleInputChange = (e) => {
@@ -1575,7 +1605,6 @@ function B2BGrowthAuditor({ navigateTo }) {
   const handleAuditSubmit = async (e) => {
     e.preventDefault();
     setIsSending(true);
-    
     try {
       if (typeof window.fbq === 'function') {
         window.fbq('track', 'Lead', {
@@ -1584,7 +1613,6 @@ function B2BGrowthAuditor({ navigateTo }) {
           currency: 'GBP'
         });
       }
-      
       if (typeof window.gtag === 'function') {
         window.gtag('event', 'generate_lead', {
           event_category: 'Engagement',
@@ -1592,7 +1620,6 @@ function B2BGrowthAuditor({ navigateTo }) {
           value: annualRevLost
         });
       }
-
       await trackServerLead({
         name: auditForm.name,
         email: auditForm.email,
@@ -1600,187 +1627,543 @@ function B2BGrowthAuditor({ navigateTo }) {
         service: 'web-design-development',
         message: `B2B Audit Results: Platform: ${platform}, Traffic: ${traffic}, Ad Spend: £${adSpend}, Speed: ${speed}s. Wasted Spend: £${wastedAdSpend}, Leads Lost: ${leadsLost}, Annual Rev Lost: £${annualRevLost}`
       });
-      
       setSubmitted(true);
     } catch (err) {
-      console.error('Audit submit error:', err);
+      console.error(err);
       setSubmitted(true);
     } finally {
       setIsSending(false);
     }
   };
 
+  // Schema Generator Logic
+  const generateJsonLd = () => {
+    if (schemaType === 'organization') {
+      const socials = orgSocials ? orgSocials.split(',').map(s => s.trim()).filter(Boolean) : [];
+      const schema = {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": orgName,
+        "url": orgUrl,
+        "logo": orgLogo
+      };
+      if (socials.length > 0) {
+        schema.sameAs = socials;
+      }
+      return JSON.stringify(schema, null, 2);
+    }
+    if (schemaType === 'local_business') {
+      return JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "LocalBusiness",
+        "name": bizName,
+        "address": {
+          "@type": "PostalAddress",
+          "streetAddress": bizAddress,
+          "addressLocality": bizCity,
+          "postalCode": bizZip,
+          "addressCountry": "GB"
+        },
+        "telephone": bizPhone,
+        "openingHours": bizHours
+      }, null, 2);
+    }
+    if (schemaType === 'faq') {
+      const validFaqs = faqs.filter(f => f.question && f.answer);
+      return JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": validFaqs.map(f => ({
+          "@type": "Question",
+          "name": f.question,
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": f.answer
+          }
+        }))
+      }, null, 2);
+    }
+    return '';
+  };
+
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(`<script type="application/ld+json">\n${generateJsonLd()}\n<\/script>`);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const addFaqRow = () => setFaqs(prev => [...prev, { question: '', answer: '' }]);
+  const removeFaqRow = (index) => setFaqs(prev => prev.filter((_, idx) => idx !== index));
+  const handleFaqChange = (index, field, val) => {
+    setFaqs(prev => prev.map((f, idx) => idx === index ? { ...f, [field]: val } : f));
+  };
+
+  const handleSchemaSubmit = async (e) => {
+    e.preventDefault();
+    setIsSchemaSending(true);
+    try {
+      await trackServerLead({
+        name: schemaForm.name,
+        email: schemaForm.email,
+        phone: 'N/A',
+        service: 'seo',
+        message: `Schema Audit Request: Website: ${schemaForm.website}. Generated Schema Type: ${schemaType}`
+      });
+      setSchemaSubmitted(true);
+    } catch (err) {
+      console.error(err);
+      setSchemaSubmitted(true);
+    } finally {
+      setIsSchemaSending(false);
+    }
+  };
+
   return (
     <section className="tools-page section-padding animate-float">
       <div className="container">
-        <div className="section-header text-center">
-          <span className="badge">Interactive Tools</span>
-          <h2>B2B Conversion & Ad Waste Auditor</h2>
-          <p className="section-subtitle">
-            Calculate exactly how much ad spend you are wasting and how many leads you are losing due to website load speed latency.
-          </p>
+        
+        {/* Tab Selector */}
+        <div className="tools-nav-tabs">
+          <button 
+            className={`tools-tab-btn ${activeTab === 'auditor' ? 'active' : ''}`}
+            onClick={() => setActiveTab('auditor')}
+          >
+            📊 Ad & Speed Conversion Auditor
+          </button>
+          <button 
+            className={`tools-tab-btn ${activeTab === 'schema' ? 'active' : ''}`}
+            onClick={() => setActiveTab('schema')}
+          >
+            🔍 Google Schema JSON-LD Generator
+          </button>
         </div>
 
-        <div className="auditor-grid">
-          {/* Inputs Column */}
-          <div className="auditor-card glass-panel">
-            <h3>Configure Your Website Metrics</h3>
-            
-            <div className="form-group">
-              <label>Current Website Platform</label>
-              <select value={platform} onChange={(e) => setPlatform(e.target.value)} className="form-select-tools">
-                <option value="wordpress">WordPress (Dynamic PHP)</option>
-                <option value="shopify">Shopify (Hosted Cloud)</option>
-                <option value="wix">Wix / Squarespace</option>
-                <option value="custom">Custom React / Static Site</option>
-              </select>
+        {activeTab === 'auditor' ? (
+          <div>
+            <div className="section-header text-center">
+              <span className="badge">Auditor Tool</span>
+              <h2>B2B Conversion & Ad Waste Auditor</h2>
+              <p className="section-subtitle">
+                Calculate exactly how much ad spend you are wasting and how many leads you are losing due to website load speed latency.
+              </p>
             </div>
 
-            <div className="form-group">
-              <label>Monthly Website Traffic (Visitors): <strong>{traffic.toLocaleString()}</strong></label>
-              <input 
-                type="range" 
-                min="1000" 
-                max="100000" 
-                step="1000" 
-                value={traffic} 
-                className="form-slider-tools"
-                onChange={(e) => setTraffic(Number(e.target.value))} 
-              />
-            </div>
-
-            <div className="form-group">
-              <label>Monthly Paid Ad Spend (Google/Meta): <strong>£{adSpend.toLocaleString()}</strong></label>
-              <input 
-                type="range" 
-                min="0" 
-                max="25000" 
-                step="500" 
-                value={adSpend} 
-                className="form-slider-tools"
-                onChange={(e) => setAdSpend(Number(e.target.value))} 
-              />
-            </div>
-
-            <div className="form-group">
-              <label>Current Load Speed: <strong>{speed} seconds</strong></label>
-              <input 
-                type="range" 
-                min="0.4" 
-                max="10.0" 
-                step="0.1" 
-                value={speed} 
-                className="form-slider-tools"
-                onChange={(e) => setSpeed(Number(e.target.value))} 
-              />
-              <div className="speed-gauge-wrap">
-                <div 
-                  className="speed-gauge-bar" 
-                  style={{ 
-                    width: `${(speed / 10) * 100}%`,
-                    background: speed < 1.5 ? '#00D0FF' : speed < 3.0 ? '#E17A00' : '#ff4d4d'
-                  }} 
-                />
-              </div>
-              <div className="speed-labels">
-                <span className="fast">0.4s (React Limit)</span>
-                <span className="slow">10.0s (Severe Latency)</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Results Column */}
-          <div className="results-card glass-panel highlight-border">
-            <h3>Audit Assessment</h3>
-            
-            <div className="result-metric-row">
-              <div className="result-metric-box">
-                <span className="metric-label">Estimated Ad Click Waste</span>
-                <span className="metric-value text-red">
-                  £{wastedAdSpend.toLocaleString()} <span className="period">/ month</span>
-                </span>
-                <p className="metric-desc">Money thrown away on users who clicked your ads but bounced before the page loaded.</p>
-              </div>
-
-              <div className="result-metric-box">
-                <span className="metric-label">Estimated Leads Lost</span>
-                <span className="metric-value text-orange">
-                  {leadsLost} <span className="period">leads / month</span>
-                </span>
-                <p className="metric-desc">Inquiries lost due to high friction and latency in loading forms.</p>
-              </div>
-            </div>
-
-            <div className="revenue-lost-box">
-              <span className="rev-label">Annual Revenue Recovery Potential</span>
-              <span className="rev-value">£{annualRevLost.toLocaleString()}</span>
-              <p className="rev-desc">Estimated revenue lost annually based on a standard B2B client value of £500.</p>
-            </div>
-
-            {!submitted ? (
-              <form onSubmit={handleAuditSubmit} className="audit-lead-form">
-                <h4>Receive Custom Audit Report & Action Plan</h4>
-                <p className="form-intro">Submit your details to get a detailed performance audit PDF and book a free speed consulting session with Zoya.</p>
+            <div className="auditor-grid">
+              <div className="auditor-card glass-panel">
+                <h3>Configure Your Website Metrics</h3>
                 
-                <div className="audit-form-grid">
-                  <div className="form-group">
-                    <input 
-                      type="text" 
-                      name="name" 
-                      placeholder="Your Name *" 
-                      required 
-                      className="form-input-tools"
-                      value={auditForm.name}
-                      onChange={handleInputChange}
+                <div className="form-group">
+                  <label>Current Website Platform</label>
+                  <select value={platform} onChange={(e) => setPlatform(e.target.value)} className="form-select-tools">
+                    <option value="wordpress">WordPress (Dynamic PHP)</option>
+                    <option value="shopify">Shopify (Hosted Cloud)</option>
+                    <option value="wix">Wix / Squarespace</option>
+                    <option value="custom">Custom React / Static Site</option>
+                  </select>
+                </div>
+
+                <div className="form-group">
+                  <label>Monthly Website Traffic (Visitors): <strong>{traffic.toLocaleString()}</strong></label>
+                  <input 
+                    type="range" 
+                    min="1000" 
+                    max="100000" 
+                    step="1000" 
+                    value={traffic} 
+                    className="form-slider-tools"
+                    onChange={(e) => setTraffic(Number(e.target.value))} 
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label>Monthly Paid Ad Spend (Google/Meta): <strong>£{adSpend.toLocaleString()}</strong></label>
+                  <input 
+                    type="range" 
+                    min="0" 
+                    max="25000" 
+                    step="500" 
+                    value={adSpend} 
+                    className="form-slider-tools"
+                    onChange={(e) => setAdSpend(Number(e.target.value))} 
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label>Current Load Speed: <strong>{speed} seconds</strong></label>
+                  <input 
+                    type="range" 
+                    min="0.4" 
+                    max="10.0" 
+                    step="0.1" 
+                    value={speed} 
+                    className="form-slider-tools"
+                    onChange={(e) => setSpeed(Number(e.target.value))} 
+                  />
+                  <div className="speed-gauge-wrap">
+                    <div 
+                      className="speed-gauge-bar" 
+                      style={{ 
+                        width: `${(speed / 10) * 100}%`,
+                        background: speed < 1.5 ? '#00D0FF' : speed < 3.0 ? '#E17A00' : '#ff4d4d'
+                      }} 
                     />
                   </div>
-                  <div className="form-group">
-                    <input 
-                      type="email" 
-                      name="email" 
-                      placeholder="Your Email *" 
-                      required 
-                      className="form-input-tools"
-                      value={auditForm.email}
-                      onChange={handleInputChange}
-                    />
+                  <div className="speed-labels">
+                    <span className="fast">0.4s (React Limit)</span>
+                    <span className="slow">10.0s (Severe Latency)</span>
                   </div>
-                  <div className="form-group">
-                    <input 
-                      type="tel" 
-                      name="phone" 
-                      placeholder="Phone Number *" 
-                      required 
-                      className="form-input-tools"
-                      value={auditForm.phone}
-                      onChange={handleInputChange}
-                    />
+                </div>
+              </div>
+
+              <div className="results-card glass-panel highlight-border">
+                <h3>Audit Assessment</h3>
+                
+                <div className="result-metric-row">
+                  <div className="result-metric-box">
+                    <span className="metric-label">Estimated Ad Click Waste</span>
+                    <span className="metric-value text-red">
+                      £{wastedAdSpend.toLocaleString()} <span className="period">/ month</span>
+                    </span>
+                    <p className="metric-desc">Money thrown away on users who clicked your ads but bounced before the page loaded.</p>
                   </div>
-                  <div className="form-group">
-                    <input 
-                      type="text" 
-                      name="company" 
-                      placeholder="Company Name *" 
-                      required 
-                      className="form-input-tools"
-                      value={auditForm.company}
-                      onChange={handleInputChange}
-                    />
+
+                  <div className="result-metric-box">
+                    <span className="metric-label">Estimated Leads Lost</span>
+                    <span className="metric-value text-orange">
+                      {leadsLost} <span className="period">leads / month</span>
+                    </span>
+                    <p className="metric-desc">Inquiries lost due to high friction and latency in loading forms.</p>
                   </div>
                 </div>
 
-                <button type="submit" className="btn btn-primary w-full mt-4" disabled={isSending}>
-                  {isSending ? 'Generating Report...' : 'Email My Audit & Book Free Call'}
-                </button>
-              </form>
-            ) : (
-              <div className="audit-success-msg">
-                <h4>✓ Audit Saved Successfully!</h4>
-                <p>Thank you. Zoya is compiling your performance audit report. A consultant will reach out to you within 24 hours to present the findings and layout the React migration plan.</p>
+                <div className="revenue-lost-box">
+                  <span className="rev-label">Annual Revenue Recovery Potential</span>
+                  <span className="rev-value">£{annualRevLost.toLocaleString()}</span>
+                  <p className="rev-desc">Estimated revenue lost annually based on a standard B2B client value of £500.</p>
+                </div>
+
+                {!submitted ? (
+                  <form onSubmit={handleAuditSubmit} className="audit-lead-form">
+                    <h4>Receive Custom Audit Report & Action Plan</h4>
+                    <p className="form-intro">Submit your details to get a detailed performance audit PDF and book a free speed consulting session with Zoya.</p>
+                    
+                    <div className="audit-form-grid">
+                      <div className="form-group">
+                        <input 
+                          type="text" 
+                          name="name" 
+                          placeholder="Your Name *" 
+                          required 
+                          className="form-input-tools"
+                          value={auditForm.name}
+                          onChange={handleInputChange}
+                        />
+                      </div>
+                      <div className="form-group">
+                        <input 
+                          type="email" 
+                          name="email" 
+                          placeholder="Your Email *" 
+                          required 
+                          className="form-input-tools"
+                          value={auditForm.email}
+                          onChange={handleInputChange}
+                        />
+                      </div>
+                      <div className="form-group">
+                        <input 
+                          type="tel" 
+                          name="phone" 
+                          placeholder="Phone Number *" 
+                          required 
+                          className="form-input-tools"
+                          value={auditForm.phone}
+                          onChange={handleInputChange}
+                        />
+                      </div>
+                      <div className="form-group">
+                        <input 
+                          type="text" 
+                          name="company" 
+                          placeholder="Company Name *" 
+                          required 
+                          className="form-input-tools"
+                          value={auditForm.company}
+                          onChange={handleInputChange}
+                        />
+                      </div>
+                    </div>
+
+                    <button type="submit" className="btn btn-primary w-full mt-4" disabled={isSending}>
+                      {isSending ? 'Generating Report...' : 'Email My Audit & Book Free Call'}
+                    </button>
+                  </form>
+                ) : (
+                  <div className="audit-success-msg">
+                    <h4>✓ Audit Saved Successfully!</h4>
+                    <p>Thank you. Zoya is compiling your performance audit report. A consultant will reach out to you within 24 hours to present the findings and layout the React migration plan.</p>
+                  </div>
+                )}
               </div>
-            )}
+            </div>
           </div>
-        </div>
+        ) : (
+          <div>
+            <div className="section-header text-center">
+              <span className="badge">SEO Tool</span>
+              <h2>Google Schema JSON-LD Generator</h2>
+              <p className="section-subtitle">
+                Generate clean, error-free structured data schemas to boost your Google rich snippets and organic search visibility.
+              </p>
+            </div>
+
+            <div className="auditor-grid">
+              <div className="auditor-card glass-panel">
+                <h3>Configure Your Schema Data</h3>
+                
+                <div className="form-group">
+                  <label>Select Schema Type</label>
+                  <select value={schemaType} onChange={(e) => setSchemaType(e.target.value)} className="form-select-tools">
+                    <option value="organization">🏢 Organization Schema</option>
+                    <option value="local_business">📍 Local Business Schema</option>
+                    <option value="faq">❓ FAQ Page Schema</option>
+                  </select>
+                </div>
+
+                {/* Organization Schema Fields */}
+                {schemaType === 'organization' && (
+                  <div>
+                    <div className="form-group mt-4">
+                      <label>Organization Name</label>
+                      <input 
+                        type="text" 
+                        value={orgName} 
+                        className="form-input-tools mt-2" 
+                        onChange={(e) => setOrgName(e.target.value)} 
+                      />
+                    </div>
+                    <div className="form-group mt-4">
+                      <label>Website URL</label>
+                      <input 
+                        type="url" 
+                        value={orgUrl} 
+                        className="form-input-tools mt-2" 
+                        onChange={(e) => setOrgUrl(e.target.value)} 
+                      />
+                    </div>
+                    <div className="form-group mt-4">
+                      <label>Logo URL</label>
+                      <input 
+                        type="url" 
+                        value={orgLogo} 
+                        className="form-input-tools mt-2" 
+                        onChange={(e) => setOrgLogo(e.target.value)} 
+                      />
+                    </div>
+                    <div className="form-group mt-4">
+                      <label>Social Profiles (Comma Separated)</label>
+                      <input 
+                        type="text" 
+                        value={orgSocials} 
+                        className="form-input-tools mt-2" 
+                        onChange={(e) => setOrgSocials(e.target.value)} 
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {/* Local Business Schema Fields */}
+                {schemaType === 'local_business' && (
+                  <div>
+                    <div className="form-group mt-4">
+                      <label>Business Name</label>
+                      <input 
+                        type="text" 
+                        value={bizName} 
+                        className="form-input-tools mt-2" 
+                        onChange={(e) => setBizName(e.target.value)} 
+                      />
+                    </div>
+                    <div className="form-group mt-4">
+                      <label>Street Address</label>
+                      <input 
+                        type="text" 
+                        value={bizAddress} 
+                        className="form-input-tools mt-2" 
+                        onChange={(e) => setBizAddress(e.target.value)} 
+                      />
+                    </div>
+                    <div className="form-group mt-4">
+                      <label>City / Town</label>
+                      <input 
+                        type="text" 
+                        value={bizCity} 
+                        className="form-input-tools mt-2" 
+                        onChange={(e) => setBizCity(e.target.value)} 
+                      />
+                    </div>
+                    <div className="form-group mt-4">
+                      <label>Postcode / Zip</label>
+                      <input 
+                        type="text" 
+                        value={bizZip} 
+                        className="form-input-tools mt-2" 
+                        onChange={(e) => setBizZip(e.target.value)} 
+                      />
+                    </div>
+                    <div className="form-group mt-4">
+                      <label>Telephone</label>
+                      <input 
+                        type="tel" 
+                        value={bizPhone} 
+                        className="form-input-tools mt-2" 
+                        onChange={(e) => setBizPhone(e.target.value)} 
+                      />
+                    </div>
+                    <div className="form-group mt-4">
+                      <label>Opening Hours</label>
+                      <input 
+                        type="text" 
+                        value={bizHours} 
+                        className="form-input-tools mt-2" 
+                        onChange={(e) => setBizHours(e.target.value)} 
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {/* FAQ Schema Fields */}
+                {schemaType === 'faq' && (
+                  <div>
+                    <div className="faq-inputs-list mt-4">
+                      {faqs.map((faq, idx) => (
+                        <div key={idx} className="faq-input-row glass-panel mt-3" style={{ padding: '15px', position: 'relative' }}>
+                          <span className="faq-number" style={{ color: 'var(--secondary)', fontSize: '0.8rem', fontWeight: 'bold' }}>FAQ #{idx + 1}</span>
+                          {faqs.length > 1 && (
+                            <button 
+                              type="button" 
+                              style={{ position: 'absolute', right: '15px', top: '12px', background: 'none', border: 'none', color: '#ff4d4d', cursor: 'pointer', fontSize: '0.9rem' }}
+                              onClick={() => removeFaqRow(idx)}
+                            >
+                              ✕ Remove
+                            </button>
+                          )}
+                          <div className="form-group mt-2">
+                            <input 
+                              type="text" 
+                              placeholder="Question" 
+                              className="form-input-tools"
+                              value={faq.question}
+                              onChange={(e) => handleFaqChange(idx, 'question', e.target.value)}
+                            />
+                          </div>
+                          <div className="form-group mt-2">
+                            <textarea 
+                              placeholder="Answer" 
+                              className="form-input-tools" 
+                              rows="2"
+                              value={faq.answer}
+                              style={{ resize: 'vertical', fontFamily: 'inherit' }}
+                              onChange={(e) => handleFaqChange(idx, 'answer', e.target.value)}
+                            />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                    <button 
+                      type="button" 
+                      className="btn btn-secondary w-full mt-3"
+                      style={{ borderStyle: 'dashed', borderWidth: '1px' }}
+                      onClick={addFaqRow}
+                    >
+                      + Add Another FAQ Row
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              <div className="results-card glass-panel highlight-border">
+                <h3>Structured Data Code (JSON-LD)</h3>
+                
+                <div className="schema-code-box mt-4" style={{ position: 'relative' }}>
+                  <button 
+                    className="btn btn-secondary btn-copy-schema"
+                    onClick={copyToClipboard}
+                    style={{ position: 'absolute', right: '15px', top: '15px', padding: '8px 16px', fontSize: '0.85rem' }}
+                  >
+                    {copied ? '✓ Copied!' : '📋 Copy Script'}
+                  </button>
+                  <pre 
+                    style={{ 
+                      background: 'rgba(0,0,0,0.3)', 
+                      padding: '25px', 
+                      borderRadius: '10px', 
+                      color: '#00D0FF', 
+                      overflowX: 'auto', 
+                      fontSize: '0.85rem',
+                      fontFamily: 'monospace',
+                      maxHeight: '300px'
+                    }}
+                  >
+                    {`<script type="application/ld+json">\n${generateJsonLd()}\n<\/script>`}
+                  </pre>
+                </div>
+
+                {!schemaSubmitted ? (
+                  <form onSubmit={handleSchemaSubmit} className="audit-lead-form mt-8">
+                    <h4>Request a Rich Snippet & Schema Audit</h4>
+                    <p className="form-intro">Want our SEO team to verify your schema codes, fix Google Search Console warnings, and implement rich snippets on your website?</p>
+                    
+                    <div className="audit-form-grid">
+                      <div className="form-group">
+                        <input 
+                          type="text" 
+                          name="name" 
+                          placeholder="Your Name *" 
+                          required 
+                          className="form-input-tools"
+                          value={schemaForm.name}
+                          onChange={(e) => setSchemaForm(prev => ({ ...prev, name: e.target.value }))}
+                        />
+                      </div>
+                      <div className="form-group">
+                        <input 
+                          type="email" 
+                          name="email" 
+                          placeholder="Your Email *" 
+                          required 
+                          className="form-input-tools"
+                          value={schemaForm.email}
+                          onChange={(e) => setSchemaForm(prev => ({ ...prev, email: e.target.value }))}
+                        />
+                      </div>
+                    </div>
+                    <div className="form-group mt-3">
+                      <input 
+                        type="url" 
+                        name="website" 
+                        placeholder="Your Website URL *" 
+                        required 
+                        className="form-input-tools"
+                        value={schemaForm.website}
+                        onChange={(e) => setSchemaForm(prev => ({ ...prev, website: e.target.value }))}
+                      />
+                    </div>
+
+                    <button type="submit" className="btn btn-primary w-full mt-4" disabled={isSchemaSending}>
+                      {isSchemaSending ? 'Submitting Request...' : 'Book Free Google Schema Audit'}
+                    </button>
+                  </form>
+                ) : (
+                  <div className="audit-success-msg mt-8">
+                    <h4>✓ Audit Request Submitted!</h4>
+                    <p>Thank you. Sophia (our Head of SEO) will review your website's search engine schemas and rich snippets. We will reach out to you within 24 hours with a custom report.</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </section>
   );
