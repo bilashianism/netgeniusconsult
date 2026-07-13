@@ -3637,6 +3637,23 @@ function App() {
                         </div>
                       </div>
                     </article>
+
+                    <article className="blog-card" style={{ cursor: 'pointer' }} onClick={() => setSelectedPostId('b2b-local-seo-schema')}>
+                      <div className="blog-card-body">
+                        <div className="blog-card-meta">
+                          <span className="blog-card-badge" style={{ color: '#10B981', background: 'rgba(16, 185, 129, 0.1)' }}>SEO & Schema</span>
+                          <span>July 14, 2026</span>
+                        </div>
+                        <h3 className="blog-card-title">How to Configure JSON-LD Schema to Dominate Local B2B Search in the UK</h3>
+                        <p className="blog-card-excerpt">
+                          Learn how adding structured JSON-LD schemas like LocalBusiness, FAQPage, and Organization helps B2B agencies secure map packs, rich snippet FAQ listings, and 40%+ CTR gains.
+                        </p>
+                        <div className="blog-card-footer">
+                          <span>Read full article →</span>
+                          <span>6 min read</span>
+                        </div>
+                      </div>
+                    </article>
                   </div>
                 </div>
               ) : (
@@ -3990,6 +4007,121 @@ function App() {
                       </div>
                     </div>
                   )}
+
+                  {selectedPostId === 'b2b-local-seo-schema' && (
+                    <div className="article-detail-container">
+                      <button className="back-to-blog" onClick={() => setSelectedPostId(null)}>
+                        ← Back to all articles
+                      </button>
+                      
+                      <header className="article-header">
+                        <div className="article-meta">
+                          <span className="blog-card-badge" style={{ color: '#10B981', background: 'rgba(16, 185, 129, 0.1)' }}>SEO & Schema</span>
+                          <span>Published: July 14, 2026</span>
+                          <span>• 6 min read</span>
+                        </div>
+                        <h1 className="article-title">How to Configure JSON-LD Schema to Dominate Local B2B Search in the UK</h1>
+                        
+                        <div className="article-author-info">
+                          <img 
+                            src="/team/sophia_taylor.png" 
+                            alt="Sophia Taylor" 
+                            className="article-author-avatar" 
+                          />
+                          <div>
+                            <div className="article-author-name">Sophia Taylor</div>
+                            <div className="article-author-role">Head of Search Engine Optimization</div>
+                          </div>
+                        </div>
+                      </header>
+                      
+                      <div className="article-body">
+                        <p>
+                          In the highly competitive UK B2B marketplace, ranking on page one of Google is no longer enough. To capture high-value corporate inquiries and drive commercial leads, business services must maximize their digital real estate. This is where structured data—specifically JSON-LD schema—becomes a crucial ranking factor.
+                        </p>
+                        
+                        <h2>1. What is JSON-LD Schema?</h2>
+                        <p>
+                          JSON-LD (JavaScript Object Notation for Linked Data) is a structured data format recommended by Google. It is injected into the <code>&lt;head&gt;</code> of a page, providing search engines with explicit information about your company, physical location, reviews, articles, and frequently asked questions.
+                        </p>
+                        <p>
+                          By translating your website's content into structured markup, Google can accurately parse your company's entity relationships and display premium Rich Snippets.
+                        </p>
+                        
+                        <h2>2. Key Schema Types for UK B2B Services</h2>
+                        <p>
+                          To dominate local and commercial search queries in the UK, every professional firm should implement three fundamental schemas:
+                        </p>
+                        <ul>
+                          <li><strong>LocalBusiness Schema</strong>: Injects your exact business name, address, telephone, map coordinates, and operating hours. This is the primary driver for ranking in Google Map Packs.</li>
+                          <li><strong>Organization Schema</strong>: Connects your brand, official website URL, logo, and active social media accounts, building trust with Google's Knowledge Graph.</li>
+                          <li><strong>FAQPage Schema</strong>: Displays accordions of frequently asked questions directly in Google's organic listings, dramatically increasing your search result vertical height and drawing user attention.</li>
+                        </ul>
+
+                        <blockquote>
+                          "Implementing schema is like speaking directly to the Google bot. Instead of forcing Google to guess your location and offerings, structured JSON-LD tells it exactly who you are, what services you provide, and where you serve clients."
+                        </blockquote>
+
+                        <h2>3. Step-by-Step Configuration Example</h2>
+                        <p>
+                          Here is a production-ready template for a London-based B2B consultancy combining LocalBusiness and FAQ structures:
+                        </p>
+                        
+                        <pre style={{ background: 'rgba(255,255,255,0.03)', padding: '20px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.05)', overflowX: 'auto', fontSize: '0.85rem', color: '#88F8FF', fontFamily: 'monospace' }}>{`{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "LocalBusiness",
+      "@id": "https://netgeniusconsult.co.uk/#organization",
+      "name": "NetGenius Consult",
+      "url": "https://netgeniusconsult.co.uk",
+      "logo": "https://netgeniusconsult.co.uk/logo-black.png",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "71-75 Shelton Street, Covent Garden",
+        "addressLocality": "London",
+        "postalCode": "WC2H 9JQ",
+        "addressCountry": "GB"
+      },
+      "telephone": "+44 20 1234 5678",
+      "priceRange": "£££",
+      "openingHours": "Mo,Tu,We,Th,Fr 09:00-18:00"
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "How long does a React B2B migration take?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "A full React site migration takes 3-6 weeks depending on page count and integrations, ensuring zero downtime."
+          }
+        }
+      ]
+    }
+  ]
+}`}</pre>
+
+                        <h2>4. Verifying Schema Performance</h2>
+                        <p>
+                          After deploying your structured codes, it is essential to validate them using Google's **Rich Results Test** and **Schema Markup Validator** tools. Watch out for these common implementation errors:
+                        </p>
+                        <ul>
+                          <li><strong>Syntax Errors</strong>: Missing curly brackets <code>{"\}"}</code> or commas between properties.</li>
+                          <li><strong>Unmatched Content</strong>: Displaying schema details (like a rating score) that are not visible to human users on the actual page.</li>
+                        </ul>
+                        
+                        <div className="service-detail-cta glass-panel mt-12" style={{ padding: '30px', marginTop: '40px' }}>
+                          <h3>Generate Valid Schema in 5 Seconds</h3>
+                          <p>Use our free B2B Schema Generator tool to output valid JSON-LD tags, or let our specialists integrate advanced schemas across your corporate site.</p>
+                          <button className="btn btn-primary mt-4" onClick={() => navigateTo('tools')}>
+                            Open Schema Generator Tool
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  )}`
                 </>
               )}
             </div>
