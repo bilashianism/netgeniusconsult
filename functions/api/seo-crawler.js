@@ -1,4 +1,5 @@
 export async function onRequestPost(context) {
+  // KV Binding successfully linked and activated
   try {
     const { url } = await context.request.json();
     
