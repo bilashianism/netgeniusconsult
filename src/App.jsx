@@ -2456,7 +2456,42 @@ function B2BGrowthAuditor({ navigateTo, activeTab, setActiveTab }) {
                               ● {scoreText}
                             </span>
                             <h3>SEO Audit Assessment for {crawlResult.url.replace(/^https?:\/\//i, '')}</h3>
-                            <p>We executed a live, edge-crawl of your homepage. Our parsing engine completed a technical analysis of your indexation parameters, heading hierarchies, schema structures, and media assets.</p>
+                            
+                            {/* Plain-English Executive Verdict Panel */}
+                            <div className="executive-verdict-box">
+                              <h4 style={{ color: scoreColor, fontWeight: '700', fontSize: '1.2rem', margin: '0 0 10px 0' }}>
+                                {finalScore >= 80 
+                                  ? '🟢 Status: Highly SEO-Friendly' 
+                                  : finalScore >= 50 
+                                    ? '🟡 Status: Partially SEO-Friendly (Warnings Found)' 
+                                    : '🔴 Status: Critical Action Required (Not SEO-Friendly)'}
+                              </h4>
+                              <p className="verdict-description" style={{ color: 'var(--text-muted)', fontSize: '0.95rem', lineHeight: '1.5', margin: '0 0 12px 0' }}>
+                                {finalScore >= 80 
+                                  ? 'Your website is in excellent health! It follows standard search engine guidelines, making it easy for Google to read your content and rank your business.' 
+                                  : finalScore >= 50 
+                                    ? 'Your website has a decent foundation, but has key structural errors. Google can read some parts, but warnings (like missing headings or alt tags) are holding back your search positions.' 
+                                    : 'Your website has severe SEO issues and is NOT search engine friendly. Google cannot index your page properly, meaning you are actively losing organic visitors and potential clients to your competitors.'}
+                              </p>
+                              <div className="verdict-action-call" style={{ 
+                                display: 'inline-block',
+                                background: 'rgba(255,255,255,0.02)',
+                                border: '1px solid rgba(255,255,255,0.05)',
+                                padding: '10px 15px',
+                                borderRadius: '8px',
+                                fontSize: '0.85rem',
+                                color: '#fff',
+                                fontWeight: '600',
+                                width: '100%',
+                                boxSizing: 'border-box'
+                              }}>
+                                {finalScore >= 80 
+                                  ? '✓ No urgent fixes needed. Keep maintaining your content.' 
+                                  : finalScore >= 50 
+                                    ? '⚠️ Action Recommended: You need to resolve the warnings below to rank higher.' 
+                                    : '🚨 Urgent Action Needed: Rebuild your page setup or resolve critical errors immediately to prevent indexing drops.'}
+                              </div>
+                            </div>
                             
                             <div className="scan-meta-grid">
                               <div className="scan-meta-item">
