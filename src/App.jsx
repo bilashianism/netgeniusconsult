@@ -1577,6 +1577,7 @@ function B2BGrowthAuditor({ navigateTo, activeTab, setActiveTab }) {
   const [isCrawlLocked, setIsCrawlLocked] = useState(true);
   const [crawlLeadSubmitted, setCrawlLeadSubmitted] = useState(false);
   const [isCrawlSending, setIsCrawlSending] = useState(false);
+  const [activeSubReport, setActiveSubReport] = useState('overview');
 
   // Auditor Calculations
   const getBounceProbability = (s) => {
@@ -2396,159 +2397,417 @@ function B2BGrowthAuditor({ navigateTo, activeTab, setActiveTab }) {
               if (!crawlResult.hasSchema) score -= 10;
 
               const finalScore = Math.max(10, score);
-              const scoreColor = finalScore >= 80 ? '#10B981' : finalScore >= 50 ? '#E17A00' : '#ff4d4d';
+              const scoreColor = finalScore >= 80 ? '#10B981' : finalScore >= 50 ? '#ffb020' : '#ff4d4d';
+              const scoreText = finalScore >= 80 ? 'EXCELLENT' : finalScore >= 50 ? 'NEEDS ATTENTION' : 'CRITICAL ERRORS';
 
               return (
                 <div className="seo-report-dashboard animate-fade-in">
-                  <div className="seo-score-hero glass-panel highlight-border">
-                    <div className="score-flex-wrap">
-                      <div className="score-circle-box" style={{ borderColor: scoreColor }}>
-                        <span className="score-num" style={{ color: scoreColor }}>{finalScore}</span>
-                        <span className="score-label">Health Score</span>
-                      </div>
-                      <div className="score-text-box">
-                        <h3>SEO Assessment: {finalScore >= 80 ? 'Good' : finalScore >= 50 ? 'Needs Work' : 'Critical Warning'}</h3>
-                        <p>We crawled <strong>{crawlResult.url}</strong>. Our parser detected {crawlResult.h1s.length === 0 ? 'missing headers' : 'standard headers'}, {crawlResult.missingAltCount} accessibility issues, and analysed meta metrics.</p>
-                        <button className="btn btn-secondary mt-3" onClick={() => { setCrawlResult(null); setCrawlUrl(''); }}>Scan Another Website</button>
-                      </div>
-                    </div>
+                  
+                  {/* High-End Sub-Navigation Tabs */}
+                  <div className="seo-report-tabs glass-panel mt-6">
+                    <button 
+                      className={`seo-tab-btn ${activeSubReport === 'overview' ? 'active' : ''}`} 
+                      onClick={() => setActiveSubReport('overview')}
+                    >
+                      <span className="tab-icon">🔍</span> Overview Report
+                    </button>
+                    <button 
+                      className={`seo-tab-btn ${activeSubReport === 'details' ? 'active' : ''}`} 
+                      onClick={() => setActiveSubReport('details')}
+                    >
+                      <span className="tab-icon">📑</span> Headings & Outline
+                    </button>
+                    <button 
+                      className={`seo-tab-btn ${activeSubReport === 'roadmap' ? 'active' : ''}`} 
+                      onClick={() => setActiveSubReport('roadmap')}
+                    >
+                      <span className="tab-icon">📋</span> SEO Fix Roadmap
+                    </button>
                   </div>
 
-                  <div className="auditor-grid mt-8">
-                    {/* Panel 1: Meta Tags */}
-                    <div className="auditor-card glass-panel">
-                      <h3>Meta Headers Audit</h3>
-                      
-                      <div className="audit-item-row">
-                        <div className="audit-status-badge" style={{ background: crawlResult.title ? (crawlResult.title.length >= 40 && crawlResult.title.length <= 70 ? 'rgba(16, 185, 129, 0.1)' : 'rgba(225, 122, 0, 0.1)') : 'rgba(255, 77, 77, 0.1)' }}>
-                          {crawlResult.title ? (crawlResult.title.length >= 40 && crawlResult.title.length <= 70 ? '✅ Perfect' : '⚠️ Warning') : '❌ Missing'}
-                        </div>
-                        <div className="audit-item-info">
-                          <strong>Page Title ({crawlResult.title.length} chars)</strong>
-                          <p className="meta-preview-text">"{crawlResult.title || 'No Title Tag Found!'}"</p>
-                          <span className="audit-guideline">Ideal length is 40-70 characters.</span>
-                        </div>
-                      </div>
-
-                      <div className="audit-item-row mt-4">
-                        <div className="audit-status-badge" style={{ background: crawlResult.description ? (crawlResult.description.length >= 100 && crawlResult.description.length <= 165 ? 'rgba(16, 185, 129, 0.1)' : 'rgba(225, 122, 0, 0.1)') : 'rgba(255, 77, 77, 0.1)' }}>
-                          {crawlResult.description ? (crawlResult.description.length >= 100 && crawlResult.description.length <= 165 ? '✅ Perfect' : '⚠️ Warning') : '❌ Missing'}
-                        </div>
-                        <div className="audit-item-info">
-                          <strong>Meta Description ({crawlResult.description.length} chars)</strong>
-                          <p className="meta-preview-text">"{crawlResult.description || 'No Meta Description Found!'}"</p>
-                          <span className="audit-guideline">Ideal length is 100-165 characters.</span>
-                        </div>
-                      </div>
-
-                      <div className="audit-item-row mt-4">
-                        <div className="audit-status-badge" style={{ background: crawlResult.canonical ? 'rgba(16, 185, 129, 0.1)' : 'rgba(255, 77, 77, 0.1)' }}>
-                          {crawlResult.canonical ? '✅ Set' : '❌ Missing'}
-                        </div>
-                        <div className="audit-item-info">
-                          <strong>Canonical Link</strong>
-                          <p className="meta-preview-text">{crawlResult.canonical || 'No Canonical Tag Found!'}</p>
-                          <span className="audit-guideline">Canonical tags prevent duplicate content penalties.</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Panel 2: Headings & Media */}
-                    <div className="auditor-card glass-panel">
-                      <h3>Page Layout & Headings</h3>
-
-                      <div className="audit-item-row">
-                        <div className="audit-status-badge" style={{ background: crawlResult.h1s.length === 1 ? 'rgba(16, 185, 129, 0.1)' : crawlResult.h1s.length > 1 ? 'rgba(225, 122, 0, 0.1)' : 'rgba(255, 77, 77, 0.1)' }}>
-                          {crawlResult.h1s.length === 1 ? '✅ Correct' : crawlResult.h1s.length > 1 ? '⚠️ Multi' : '❌ Missing'}
-                        </div>
-                        <div className="audit-item-info">
-                          <strong>H1 Header (Count: {crawlResult.h1s.length})</strong>
-                          {crawlResult.h1s.length > 0 ? (
-                            <ul className="audit-headers-list">
-                              {crawlResult.h1s.map((h1, i) => <li key={i}>"{h1}"</li>)}
-                            </ul>
-                          ) : (
-                            <p className="text-red">Critical: Every page must have exactly one H1 tag.</p>
-                          )}
-                        </div>
-                      </div>
-
-                      <div className="audit-item-row mt-4">
-                        <div className="audit-status-badge" style={{ background: 'rgba(255, 255, 255, 0.05)' }}>
-                          ℹ️ Info
-                        </div>
-                        <div className="audit-item-info">
-                          <strong>H2 Subheadings (Count: {crawlResult.h2s.length})</strong>
-                          {crawlResult.h2s.length > 0 ? (
-                            <div className="h2-preview-scroll">
-                              <ul className="audit-headers-list">
-                                {crawlResult.h2s.slice(0, 4).map((h2, i) => <li key={i}>"{h2}"</li>)}
-                                {crawlResult.h2s.length > 4 && <li>... and {crawlResult.h2s.length - 4} more.</li>}
-                              </ul>
+                  {/* 1. OVERVIEW REPORT VIEW */}
+                  {activeSubReport === 'overview' && (
+                    <div className="tab-content-wrap">
+                      <div className="seo-score-hero-premium glass-panel highlight-border">
+                        <div className="score-flex-wrap-premium">
+                          <div className="seo-score-gauge-wrap">
+                            <svg className="score-ring-svg" viewBox="0 0 120 120">
+                              <circle className="score-ring-bg" cx="60" cy="60" r="50" />
+                              <circle 
+                                className="score-ring-fill" 
+                                cx="60" 
+                                cy="60" 
+                                r="50" 
+                                style={{
+                                  strokeDasharray: '314.159',
+                                  strokeDashoffset: 314.159 - (314.159 * finalScore) / 100,
+                                  stroke: scoreColor
+                                }}
+                              />
+                            </svg>
+                            <div className="score-ring-text">
+                              <span className="score-num-val" style={{ color: scoreColor }}>{finalScore}</span>
+                              <span className="score-label-pct">%</span>
                             </div>
-                          ) : (
-                            <p>No H2 headers detected.</p>
-                          )}
+                          </div>
+
+                          <div className="score-text-box-premium">
+                            <span className="assessment-badge" style={{ backgroundColor: `${scoreColor}15`, color: scoreColor, borderColor: `${scoreColor}30` }}>
+                              ● {scoreText}
+                            </span>
+                            <h3>SEO Audit Assessment for {crawlResult.url.replace(/^https?:\/\//i, '')}</h3>
+                            <p>We executed a live, edge-crawl of your homepage. Our parsing engine completed a technical analysis of your indexation parameters, heading hierarchies, schema structures, and media assets.</p>
+                            
+                            <div className="scan-meta-grid">
+                              <div className="scan-meta-item">
+                                <span className="meta-label">Total Size</span>
+                                <span className="meta-value">{(crawlResult.pageSizeBytes / 1024).toFixed(1)} KB</span>
+                              </div>
+                              <div className="scan-meta-item">
+                                <span className="meta-label">Images Found</span>
+                                <span className="meta-value">{crawlResult.totalImages}</span>
+                              </div>
+                              <div className="scan-meta-item">
+                                <span className="meta-label">Heading Tags</span>
+                                <span className="meta-value">{crawlResult.h1s.length + crawlResult.h2s.length} total</span>
+                              </div>
+                            </div>
+
+                            <button className="btn btn-secondary btn-small mt-4" onClick={() => { setCrawlResult(null); setCrawlUrl(''); }}>
+                              🔀 Scan Another Website
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="auditor-grid mt-8">
+                        {/* Meta Tags Analyzer Card */}
+                        <div className="auditor-card-premium glass-panel">
+                          <div className="card-header-premium">
+                            <h4>Meta Tags & Search Snippets</h4>
+                            <span className="card-subtitle-premium">How your page appears in Google search results</span>
+                          </div>
+
+                          {/* Title Tag */}
+                          <div className="audit-item-box-premium">
+                            <div className="audit-item-header">
+                              <strong className="item-title">Page Title Tag</strong>
+                              <span className={`status-pill ${crawlResult.title ? (crawlResult.title.length >= 40 && crawlResult.title.length <= 70 ? 'success' : 'warning') : 'error'}`}>
+                                {crawlResult.title ? (crawlResult.title.length >= 40 && crawlResult.title.length <= 70 ? 'Perfect Length' : 'Adjust Length') : 'Missing'}
+                              </span>
+                            </div>
+                            <div className="code-block-preview mt-2">
+                              {crawlResult.title ? `"${crawlResult.title}"` : 'No title tag found.'}
+                            </div>
+                            
+                            <div className="char-length-bar-wrap mt-3">
+                              <div className="char-length-track">
+                                <div className="ideal-range-highlight" style={{ left: '44%', width: '33%' }} />
+                                <div className="current-length-pin" style={{ left: `${Math.min(100, (crawlResult.title.length / 90) * 100)}%`, backgroundColor: scoreColor }} />
+                              </div>
+                              <div className="char-length-labels">
+                                <span>0 chars</span>
+                                <span className="ideal-label">Ideal (40-70): {crawlResult.title.length} chars</span>
+                                <span>90+ chars</span>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Meta Description */}
+                          <div className="audit-item-box-premium mt-6">
+                            <div className="audit-item-header">
+                              <strong className="item-title">Meta Description</strong>
+                              <span className={`status-pill ${crawlResult.description ? (crawlResult.description.length >= 100 && crawlResult.description.length <= 165 ? 'success' : 'warning') : 'error'}`}>
+                                {crawlResult.description ? (crawlResult.description.length >= 100 && crawlResult.description.length <= 165 ? 'Perfect Length' : 'Adjust Length') : 'Missing'}
+                              </span>
+                            </div>
+                            <div className="code-block-preview mt-2">
+                              {crawlResult.description ? `"${crawlResult.description}"` : 'No meta description found.'}
+                            </div>
+                            
+                            <div className="char-length-bar-wrap mt-3">
+                              <div className="char-length-track">
+                                <div className="ideal-range-highlight" style={{ left: '50%', width: '32%' }} />
+                                <div className="current-length-pin" style={{ left: `${Math.min(100, (crawlResult.description.length / 200) * 100)}%`, backgroundColor: scoreColor }} />
+                              </div>
+                              <div className="char-length-labels">
+                                <span>0 chars</span>
+                                <span className="ideal-label">Ideal (100-165): {crawlResult.description.length} chars</span>
+                                <span>200+ chars</span>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Canonical */}
+                          <div className="audit-item-box-premium mt-6">
+                            <div className="audit-item-header">
+                              <strong className="item-title">Canonical Link Tag</strong>
+                              <span className={`status-pill ${crawlResult.canonical ? 'success' : 'error'}`}>
+                                {crawlResult.canonical ? 'Configured' : 'Missing'}
+                              </span>
+                            </div>
+                            <div className="code-block-preview mt-2" style={{ fontSize: '0.8rem' }}>
+                              {crawlResult.canonical ? crawlResult.canonical : 'No canonical link found.'}
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Accessibility & Tech SEO Card */}
+                        <div className="auditor-card-premium glass-panel">
+                          <div className="card-header-premium">
+                            <h4>Accessibility & Tech Audits</h4>
+                            <span className="card-subtitle-premium">Schema markup, page weights, and image tags</span>
+                          </div>
+
+                          {/* Image Alt tags */}
+                          <div className="audit-item-box-premium">
+                            <div className="audit-item-header">
+                              <strong className="item-title">Image Alt Attributes</strong>
+                              <span className={`status-pill ${crawlResult.missingAltCount === 0 ? 'success' : 'warning'}`}>
+                                {crawlResult.missingAltCount === 0 ? 'Clean' : `${crawlResult.missingAltCount} Missing`}
+                              </span>
+                            </div>
+                            <div className="progress-split-bar mt-3">
+                              <div 
+                                className="progress-split-fill success-bg" 
+                                style={{ width: `${((crawlResult.totalImages - crawlResult.missingAltCount) / Math.max(1, crawlResult.totalImages)) * 100}%` }} 
+                              />
+                              <div 
+                                className="progress-split-fill error-bg" 
+                                style={{ width: `${(crawlResult.missingAltCount / Math.max(1, crawlResult.totalImages)) * 100}%` }} 
+                              />
+                            </div>
+                            <div className="split-labels-info mt-2">
+                              <span>Total Images: <strong>{crawlResult.totalImages}</strong></span>
+                              <span className="text-red">Missing Alt: <strong>{crawlResult.missingAltCount}</strong></span>
+                            </div>
+                          </div>
+
+                          {/* Structured Schema */}
+                          <div className="audit-item-box-premium mt-6">
+                            <div className="audit-item-header">
+                              <strong className="item-title">Structured Data Schemas</strong>
+                              <span className={`status-pill ${crawlResult.hasSchema ? 'success' : 'warning'}`}>
+                                {crawlResult.hasSchema ? 'Active' : 'Not Detected'}
+                              </span>
+                            </div>
+                            <p className="mt-2 text-muted" style={{ fontSize: '0.9rem', lineHeight: '1.4' }}>
+                              {crawlResult.hasSchema 
+                                ? '✓ JSON-LD schema parsed correctly. Your page is eligible for Google rich results.' 
+                                : '⚠ No on-page schema found. Adding Organization or LocalBusiness schema will display rich map details on search results.'}
+                            </p>
+                          </div>
+
+                          {/* Page HTML Size */}
+                          <div className="audit-item-box-premium mt-6">
+                            <div className="audit-item-header">
+                              <strong className="item-title">HTML Code Size</strong>
+                              <span className="status-pill info">
+                                {(crawlResult.pageSizeBytes / 1024).toFixed(1)} KB
+                              </span>
+                            </div>
+                            <p className="mt-2 text-muted" style={{ fontSize: '0.9rem', lineHeight: '1.4' }}>
+                              Your page weight is lightweight and loads quickly. Rebuilding this template in custom React will further improve parsing speed.
+                            </p>
+                          </div>
                         </div>
                       </div>
                     </div>
+                  )}
+
+                  {/* 2. HEADINGS & OUTLINE VIEW */}
+                  {activeSubReport === 'details' && (
+                    <div className="tab-content-wrap glass-panel highlight-border p-8 mt-6">
+                      <div className="card-header-premium mb-6">
+                        <h4>Website Headings & Outline Structuring</h4>
+                        <span className="card-subtitle-premium">Auditing the H1 and H2 tags mapping of your page</span>
+                      </div>
+
+                      <div className="outline-audit-row">
+                        <div className="outline-item-column">
+                          <div className="heading-summary-box glass-panel text-center">
+                            <span className="h-tag-label">H1 Header Tag</span>
+                            <span className="h-tag-count" style={{ color: crawlResult.h1s.length === 1 ? '#10B981' : '#ff4d4d' }}>{crawlResult.h1s.length}</span>
+                            <p className="text-muted mt-2" style={{ fontSize: '0.85rem' }}>Ideal: exactly 1 per page</p>
+                          </div>
+                          
+                          <div className="h-content-list mt-4">
+                            <strong>Parsed H1 Contents:</strong>
+                            {crawlResult.h1s.length > 0 ? (
+                              <ul className="h-items-ul">
+                                {crawlResult.h1s.map((h1, i) => (
+                                  <li key={i} className="h1-list-li">
+                                    <span className="h-tag-pill">H1</span> {h1}
+                                  </li>
+                                ))}
+                              </ul>
+                            ) : (
+                              <div className="error-alert-box mt-2">
+                                ❌ No H1 tag detected on this page! Google relies on the H1 header to understand what your page is about.
+                              </div>
+                            )}
+                          </div>
+                        </div>
+
+                        <div className="outline-item-column border-left-divider">
+                          <div className="heading-summary-box glass-panel text-center">
+                            <span className="h-tag-label">H2 Subheaders</span>
+                            <span className="h-tag-count text-secondary">{crawlResult.h2s.length}</span>
+                            <p className="text-muted mt-2" style={{ fontSize: '0.85rem' }}>Used for sectional outline</p>
+                          </div>
+
+                          <div className="h-content-list mt-4">
+                            <strong>Parsed H2 Outline:</strong>
+                            {crawlResult.h2s.length > 0 ? (
+                              <div className="h2-outline-scroll">
+                                <ul className="h-items-ul">
+                                  {crawlResult.h2s.map((h2, i) => (
+                                    <li key={i} className="h2-list-li">
+                                      <span className="h-tag-pill h2-pill">H2</span> {h2}
+                                    </li>
+                                  ))}
+                                </ul>
+                              </div>
+                            ) : (
+                              <div className="info-alert-box mt-2">
+                                ℹ️ No H2 tags found. Adding secondary subheadings organizes your content for reader indexation.
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* 3. SEO FIX ROADMAP VIEW */}
+                  {activeSubReport === 'roadmap' && (
+                    <div className="tab-content-wrap glass-panel highlight-border p-8 mt-6">
+                      <div className="card-header-premium mb-6">
+                        <h4>SEO Fix Action Roadmap</h4>
+                        <span className="card-subtitle-premium">Follow the checklist below to optimize your page structure and raise your health score to 100%</span>
+                      </div>
+
+                      <div className="roadmap-checklist">
+                        {/* 1. Meta Description (High Priority) */}
+                        <div className="roadmap-item glass-panel">
+                          <div className="roadmap-chk-wrap">
+                            <input type="checkbox" checked={!!crawlResult.description} readOnly className="roadmap-checkbox" />
+                            <div className="roadmap-info">
+                              <div className="roadmap-meta-row">
+                                <strong className="roadmap-task">Add Meta Description Tag</strong>
+                                <span className={`priority-pill ${!crawlResult.description ? 'high' : 'done'}`}>
+                                  {!crawlResult.description ? 'High Priority' : 'Completed'}
+                                </span>
+                              </div>
+                              <p className="text-muted mt-1">Provide a brief 100-165 character summary of the page for search result previews. Improves organic CTR.</p>
+                            </div>
+                          </div>
+                          <span className="roadmap-impact">+20 pts</span>
+                        </div>
+
+                        {/* 2. Page Title length (Medium Priority) */}
+                        <div className="roadmap-item glass-panel mt-3">
+                          <div className="roadmap-chk-wrap">
+                            <input type="checkbox" checked={crawlResult.title && crawlResult.title.length >= 40 && crawlResult.title.length <= 70} readOnly className="roadmap-checkbox" />
+                            <div className="roadmap-info">
+                              <div className="roadmap-meta-row">
+                                <strong className="roadmap-task">Optimize Page Title Length (40-70 chars)</strong>
+                                <span className={`priority-pill ${crawlResult.title && crawlResult.title.length >= 40 && crawlResult.title.length <= 70 ? 'done' : 'medium'}`}>
+                                  {crawlResult.title && crawlResult.title.length >= 40 && crawlResult.title.length <= 70 ? 'Completed' : 'Medium Priority'}
+                                </span>
+                              </div>
+                              <p className="text-muted mt-1">Adjust title tag to fit between 40 and 70 characters so it is not truncated on search result pages.</p>
+                            </div>
+                          </div>
+                          <span className="roadmap-impact">+5 pts</span>
+                        </div>
+
+                        {/* 3. H1 Tag presence (High Priority) */}
+                        <div className="roadmap-item glass-panel mt-3">
+                          <div className="roadmap-chk-wrap">
+                            <input type="checkbox" checked={crawlResult.h1s.length === 1} readOnly className="roadmap-checkbox" />
+                            <div className="roadmap-info">
+                              <div className="roadmap-meta-row">
+                                <strong className="roadmap-task">Ensure Exactly One H1 Header Tag</strong>
+                                <span className={`priority-pill ${crawlResult.h1s.length === 1 ? 'done' : 'high'}`}>
+                                  {crawlResult.h1s.length === 1 ? 'Completed' : 'High Priority'}
+                                </span>
+                              </div>
+                              <p className="text-muted mt-1">Add exactly one main H1 heading at the top of the body to set clear keyword context for search engines.</p>
+                            </div>
+                          </div>
+                          <span className="roadmap-impact">+15 pts</span>
+                        </div>
+
+                        {/* 4. Canonical Tag (High Priority) */}
+                        <div className="roadmap-item glass-panel mt-3">
+                          <div className="roadmap-chk-wrap">
+                            <input type="checkbox" checked={!!crawlResult.canonical} readOnly className="roadmap-checkbox" />
+                            <div className="roadmap-info">
+                              <div className="roadmap-meta-row">
+                                <strong className="roadmap-task">Configure Canonical Link Rel</strong>
+                                <span className={`priority-pill ${crawlResult.canonical ? 'done' : 'high'}`}>
+                                  {crawlResult.canonical ? 'Completed' : 'High Priority'}
+                                </span>
+                              </div>
+                              <p className="text-muted mt-1">Specify canonical URLs to inform search engines which version of a page is the master source, preventing duplicates.</p>
+                            </div>
+                          </div>
+                          <span className="roadmap-impact">+10 pts</span>
+                        </div>
+
+                        {/* 5. Image Alt attributes (Medium Priority) */}
+                        <div className="roadmap-item glass-panel mt-3">
+                          <div className="roadmap-chk-wrap">
+                            <input type="checkbox" checked={crawlResult.missingAltCount === 0} readOnly className="roadmap-checkbox" />
+                            <div className="roadmap-info">
+                              <div className="roadmap-meta-row">
+                                <strong className="roadmap-task">Add Alt Attributes to All Images</strong>
+                                <span className={`priority-pill ${crawlResult.missingAltCount === 0 ? 'done' : 'medium'}`}>
+                                  {crawlResult.missingAltCount === 0 ? 'Completed' : 'Medium Priority'}
+                                </span>
+                              </div>
+                              <p className="text-muted mt-1">Review image tags and add descriptive alt texts. Boosts Google Image search rankings and accessibility scores.</p>
+                            </div>
+                          </div>
+                          <span className="roadmap-impact">+15 pts</span>
+                        </div>
+
+                        {/* 6. Schema JSON-LD (Medium Priority) */}
+                        <div className="roadmap-item glass-panel mt-3">
+                          <div className="roadmap-chk-wrap">
+                            <input type="checkbox" checked={crawlResult.hasSchema} readOnly className="roadmap-checkbox" />
+                            <div className="roadmap-info">
+                              <div className="roadmap-meta-row">
+                                <strong className="roadmap-task">Inject Structured JSON-LD Schema</strong>
+                                <span className={`priority-pill ${crawlResult.hasSchema ? 'done' : 'medium'}`}>
+                                  {crawlResult.hasSchema ? 'Completed' : 'Medium Priority'}
+                                </span>
+                              </div>
+                              <p className="text-muted mt-1">Embed JSON-LD metadata schema templates to display ratings, reviews, or business addresses directly in search results.</p>
+                            </div>
+                          </div>
+                          <span className="roadmap-impact">+10 pts</span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* High-End CTA Consultation Block */}
+                  <div className="cta-audit-banner-premium glass-panel highlight-border mt-8">
+                    <div className="cta-banner-content-premium">
+                      <div className="expert-avatar-wrap">
+                        <img src="public/team/sophia_taylor.png" alt="Sophia Taylor" className="expert-avatar" />
+                        <div className="expert-badge">On-Page Lead</div>
+                      </div>
+                      <div className="cta-banner-text">
+                        <h4>Let Sophia's SEO Team Implement These Fixes</h4>
+                        <p>We found technical issues that are actively preventing <strong>{crawlResult.url.replace(/^https?:\/\//i, '')}</strong> from ranking in top positions. Book a free 15-minute roadmap call to let our specialists implement these structured codes on your website.</p>
+                      </div>
+                    </div>
+                    <button className="btn btn-primary" onClick={() => navigateTo('contact')}>Book Free SEO Strategy Call</button>
                   </div>
 
-                  <div className="auditor-grid mt-6">
-                    {/* Panel 3: Images */}
-                    <div className="auditor-card glass-panel">
-                      <h3>Accessibility & Images</h3>
-                      
-                      <div className="audit-item-row">
-                        <div className="audit-status-badge" style={{ background: crawlResult.missingAltCount === 0 ? 'rgba(16, 185, 129, 0.1)' : 'rgba(225, 122, 0, 0.1)' }}>
-                          {crawlResult.missingAltCount === 0 ? '✅ Perfect' : '⚠️ Check'}
-                        </div>
-                        <div className="audit-item-info">
-                          <strong>Image Alt Tags</strong>
-                          <p>Detected <strong>{crawlResult.totalImages} images</strong> in HTML source.</p>
-                          {crawlResult.missingAltCount > 0 ? (
-                            <p className="text-orange">⚠️ <strong>{crawlResult.missingAltCount} images</strong> are missing "alt" attributes. This reduces Google Image Search indexation.</p>
-                          ) : (
-                            <p className="text-green">All images have alt descriptions!</p>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Panel 4: Tech & Structured Data */}
-                    <div className="auditor-card glass-panel">
-                      <h3>Technical SEO Checks</h3>
-
-                      <div className="audit-item-row">
-                        <div className="audit-status-badge" style={{ background: crawlResult.hasSchema ? 'rgba(16, 185, 129, 0.1)' : 'rgba(225, 122, 0, 0.1)' }}>
-                          {crawlResult.hasSchema ? '✅ Active' : '⚠️ Missing'}
-                        </div>
-                        <div className="audit-item-info">
-                          <strong>Structured Data Schemas</strong>
-                          <p>{crawlResult.hasSchema ? 'JSON-LD schema detected in head markup.' : 'No schema detected. Your competitors are likely using schemas to display review stars & FAQs.'}</p>
-                        </div>
-                      </div>
-
-                      <div className="audit-item-row mt-4">
-                        <div className="audit-status-badge" style={{ background: 'rgba(255, 255, 255, 0.05)' }}>
-                          📊 Stats
-                        </div>
-                        <div className="audit-item-info">
-                          <strong>HTML Page Size</strong>
-                          <p>Total page weight: <strong>{(crawlResult.pageSizeBytes / 1024).toFixed(1)} KB</strong>.</p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Call-to-Action Booking Block */}
-                  <div className="cta-audit-banner glass-panel highlight-border mt-8">
-                    <div className="cta-banner-content">
-                      <h4>Let Sophia's SEO Team Fix Your Errors</h4>
-                      <p>Our Head of SEO (Sophia) has compiled these results. Book a free 15-minute consultation to review the findings and learn how our custom React edge migration resolves these errors forever.</p>
-                    </div>
-                    <button className="btn btn-primary" onClick={() => navigateTo('contact')}>Book Free SEO Review</button>
-                  </div>
                 </div>
               );
             })()}
