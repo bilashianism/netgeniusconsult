@@ -1764,12 +1764,12 @@ function B2BGrowthAuditor({ navigateTo, activeTab, setActiveTab }) {
     setIsCrawlLocked(true);
     setCrawlLeadSubmitted(false);
 
-    // 1. Check daily limit
-    const limitStatus = getCrawlLimitStatus();
-    if (limitStatus.limitReached) {
-      setCrawlError("Daily limit reached. You can scan up to 2 websites per day. To get deeper audits, please contact us.");
-      return;
-    }
+    // 1. Check daily limit (Disabled temporarily for testing and design adjustments)
+    // const limitStatus = getCrawlLimitStatus();
+    // if (limitStatus.limitReached) {
+    //   setCrawlError("Daily limit reached. You can scan up to 2 websites per day. To get deeper audits, please contact us.");
+    //   return;
+    // }
 
     if (!crawlUrl.trim()) {
       setCrawlError("Please enter a valid website URL.");
