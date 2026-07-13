@@ -3587,36 +3587,19 @@ function App() {
                   </div>
                   
                   <div className="blog-grid">
-                    <article className="blog-card" style={{ cursor: 'pointer' }} onClick={() => setSelectedPostId('speed-ranking-2026')}>
+                    <article className="blog-card" style={{ cursor: 'pointer' }} onClick={() => setSelectedPostId('b2b-local-seo-schema')}>
                       <div className="blog-card-body">
                         <div className="blog-card-meta">
-                          <span className="blog-card-badge" style={{ color: '#00D0FF', background: 'rgba(0, 208, 255, 0.1)' }}>SEO & Performance</span>
-                          <span>July 2, 2026</span>
+                          <span className="blog-card-badge" style={{ color: '#10B981', background: 'rgba(16, 185, 129, 0.1)' }}>SEO & Schema</span>
+                          <span>July 14, 2026</span>
                         </div>
-                        <h3 className="blog-card-title">Why Site Speed is the #1 Google Ranking Factor for B2B Websites in 2026</h3>
+                        <h3 className="blog-card-title">How to Configure JSON-LD Schema to Dominate Local B2B Search in the UK</h3>
                         <p className="blog-card-excerpt">
-                          Discover why B2B sites that load in under 1 second win the SEO race and how legacy architectures like WordPress fall short compared to modern React configurations.
+                          Learn how adding structured JSON-LD schemas like LocalBusiness, FAQPage, and Organization helps B2B agencies secure map packs, rich snippet FAQ listings, and 40%+ CTR gains.
                         </p>
                         <div className="blog-card-footer">
                           <span>Read full article →</span>
                           <span>6 min read</span>
-                        </div>
-                      </div>
-                    </article>
-
-                    <article className="blog-card" style={{ cursor: 'pointer' }} onClick={() => setSelectedPostId('b2b-paid-ads-2026')}>
-                      <div className="blog-card-body">
-                        <div className="blog-card-meta">
-                          <span className="blog-card-badge" style={{ color: '#E17A00', background: 'rgba(225, 122, 0, 0.1)' }}>Paid Ads & PPC</span>
-                          <span>July 2, 2026</span>
-                        </div>
-                        <h3 className="blog-card-title">Google Ads vs. Meta Ads: Where Should B2B Professional Services Spend Their First £5,000?</h3>
-                        <p className="blog-card-excerpt">
-                          Allocating B2B advertising budgets is challenging. Learn how to divide a £5,000 spend between Google intent search and Meta social retargeting to maximize ROI.
-                        </p>
-                        <div className="blog-card-footer">
-                          <span>Read full article →</span>
-                          <span>5 min read</span>
                         </div>
                       </div>
                     </article>
@@ -3638,15 +3621,32 @@ function App() {
                       </div>
                     </article>
 
-                    <article className="blog-card" style={{ cursor: 'pointer' }} onClick={() => setSelectedPostId('b2b-local-seo-schema')}>
+                    <article className="blog-card" style={{ cursor: 'pointer' }} onClick={() => setSelectedPostId('b2b-paid-ads-2026')}>
                       <div className="blog-card-body">
                         <div className="blog-card-meta">
-                          <span className="blog-card-badge" style={{ color: '#10B981', background: 'rgba(16, 185, 129, 0.1)' }}>SEO & Schema</span>
-                          <span>July 14, 2026</span>
+                          <span className="blog-card-badge" style={{ color: '#E17A00', background: 'rgba(225, 122, 0, 0.1)' }}>Paid Ads & PPC</span>
+                          <span>July 2, 2026</span>
                         </div>
-                        <h3 className="blog-card-title">How to Configure JSON-LD Schema to Dominate Local B2B Search in the UK</h3>
+                        <h3 className="blog-card-title">Google Ads vs. Meta Ads: Where Should B2B Professional Services Spend Their First £5,000?</h3>
                         <p className="blog-card-excerpt">
-                          Learn how adding structured JSON-LD schemas like LocalBusiness, FAQPage, and Organization helps B2B agencies secure map packs, rich snippet FAQ listings, and 40%+ CTR gains.
+                          Allocating B2B advertising budgets is challenging. Learn how to divide a £5,000 spend between Google intent search and Meta social retargeting to maximize ROI.
+                        </p>
+                        <div className="blog-card-footer">
+                          <span>Read full article →</span>
+                          <span>5 min read</span>
+                        </div>
+                      </div>
+                    </article>
+
+                    <article className="blog-card" style={{ cursor: 'pointer' }} onClick={() => setSelectedPostId('speed-ranking-2026')}>
+                      <div className="blog-card-body">
+                        <div className="blog-card-meta">
+                          <span className="blog-card-badge" style={{ color: '#00D0FF', background: 'rgba(0, 208, 255, 0.1)' }}>SEO & Performance</span>
+                          <span>July 2, 2026</span>
+                        </div>
+                        <h3 className="blog-card-title">Why Site Speed is the #1 Google Ranking Factor for B2B Websites in 2026</h3>
+                        <p className="blog-card-excerpt">
+                          Discover why B2B sites that load in under 1 second win the SEO race and how legacy architectures like WordPress fall short compared to modern React configurations.
                         </p>
                         <div className="blog-card-footer">
                           <span>Read full article →</span>
