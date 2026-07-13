@@ -1583,17 +1583,21 @@ function B2BGrowthAuditor({ navigateTo, activeTab, setActiveTab }) {
   const handleShareClick = () => {
     if (!crawlResult) return;
     const id = crawlResult.reportId || 'mock-id-testing';
-    const shareUrl = `${window.location.origin}/tools?report=${id}`;
+    const shareUrl = `${window.location.origin}/seo-report/${id}`;
     navigator.clipboard.writeText(shareUrl).then(() => {
       setShareLinkCopied(true);
       setTimeout(() => setShareLinkCopied(false), 2000);
     });
   };
 
-  // Load Saved Report from URL Parameter ?report=id on Mount
+  // Load Saved Report from URL Parameter or Clean Path on Mount
   useEffect(() => {
+    const pathMatch = window.location.pathname.match(/^\/seo-report\/([a-zA-Z0-9-]+)/);
+    const cleanReportId = pathMatch ? pathMatch[1] : null;
     const params = new URLSearchParams(window.location.search);
-    const reportId = params.get('report');
+    const queryReportId = params.get('report');
+    const reportId = cleanReportId || queryReportId;
+
     if (reportId && activeTab === 'crawler') {
       const loadSavedReport = async () => {
         setCrawlLoading(true);
@@ -1602,7 +1606,7 @@ function B2BGrowthAuditor({ navigateTo, activeTab, setActiveTab }) {
           const res = await fetch(`/api/get-report?id=${reportId}`);
           const data = await res.json();
           if (data.success) {
-            setCrawlResult(data.report);
+            setCrawlResult({ ...data.report, reportId });
             setIsCrawlLocked(false); // Saved reports are pre-unlocked
           } else {
             setCrawlError(data.error || 'Failed to load the shareable report.');
@@ -2950,14 +2954,22 @@ function App() {
   // Simple SPA Routing based on HTML5 History API (Clean Paths)
   useEffect(() => {
     const handleLocationChange = () => {
+      // 1. Check for clean path: /seo-report/uuid
+      const pathMatch = window.location.pathname.match(/^\/seo-report\/([a-zA-Z0-9-]+)/);
+      const cleanReportId = pathMatch ? pathMatch[1] : null;
+
+      // 2. Check for fallback query param: ?report=uuid
       const params = new URLSearchParams(window.location.search);
-      const reportId = params.get('report');
+      const queryReportId = params.get('report');
+
+      const reportId = cleanReportId || queryReportId;
+
       if (reportId) {
         setCurrentPath('tools');
         setActiveToolTab('crawler');
         window.scrollTo(0, 0);
         setMobileMenuOpen(false);
-        trackPageView('/tools?report=' + reportId);
+        trackPageView('/seo-report/' + reportId);
         return;
       }
 
