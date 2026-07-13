@@ -1578,6 +1578,44 @@ function B2BGrowthAuditor({ navigateTo, activeTab, setActiveTab }) {
   const [crawlLeadSubmitted, setCrawlLeadSubmitted] = useState(false);
   const [isCrawlSending, setIsCrawlSending] = useState(false);
   const [activeSubReport, setActiveSubReport] = useState('overview');
+  const [shareLinkCopied, setShareLinkCopied] = useState(false);
+
+  const handleShareClick = () => {
+    if (!crawlResult) return;
+    const id = crawlResult.reportId || 'mock-id-testing';
+    const shareUrl = `${window.location.origin}/tools?report=${id}`;
+    navigator.clipboard.writeText(shareUrl).then(() => {
+      setShareLinkCopied(true);
+      setTimeout(() => setShareLinkCopied(false), 2000);
+    });
+  };
+
+  // Load Saved Report from URL Parameter ?report=id on Mount
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const reportId = params.get('report');
+    if (reportId && activeTab === 'crawler') {
+      const loadSavedReport = async () => {
+        setCrawlLoading(true);
+        setCrawlError(null);
+        try {
+          const res = await fetch(`/api/get-report?id=${reportId}`);
+          const data = await res.json();
+          if (data.success) {
+            setCrawlResult(data.report);
+            setIsCrawlLocked(false); // Saved reports are pre-unlocked
+          } else {
+            setCrawlError(data.error || 'Failed to load the shareable report.');
+          }
+        } catch (err) {
+          setCrawlError('A network error occurred while fetching the shared report.');
+        } finally {
+          setCrawlLoading(false);
+        }
+      };
+      loadSavedReport();
+    }
+  }, [activeTab]);
 
   // Auditor Calculations
   const getBounceProbability = (s) => {
@@ -2529,9 +2567,14 @@ function B2BGrowthAuditor({ navigateTo, activeTab, setActiveTab }) {
                               </div>
                             </div>
 
-                            <button className="btn btn-secondary btn-small mt-4" onClick={() => { setCrawlResult(null); setCrawlUrl(''); }}>
-                              🔀 Scan Another Website
-                            </button>
+                            <div className="report-action-buttons-wrap mt-4" style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+                              <button className="btn btn-secondary btn-small" onClick={() => { setCrawlResult(null); setCrawlUrl(''); }}>
+                                🔀 Scan Another Website
+                              </button>
+                              <button className="btn btn-primary btn-small share-btn-premium" onClick={handleShareClick} style={{ background: 'linear-gradient(135deg, var(--secondary) 0%, #ff8c00 100%)', color: '#fff', border: 'none' }}>
+                                {shareLinkCopied ? '✓ Link Copied!' : '🔗 Share Audit Report'}
+                              </button>
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -2907,6 +2950,17 @@ function App() {
   // Simple SPA Routing based on HTML5 History API (Clean Paths)
   useEffect(() => {
     const handleLocationChange = () => {
+      const params = new URLSearchParams(window.location.search);
+      const reportId = params.get('report');
+      if (reportId) {
+        setCurrentPath('tools');
+        setActiveToolTab('crawler');
+        window.scrollTo(0, 0);
+        setMobileMenuOpen(false);
+        trackPageView('/tools?report=' + reportId);
+        return;
+      }
+
       const path = window.location.pathname.replace(/^\//, '');
       const validPaths = ['home', 'about', 'team', 'services', 'blog', 'contact', 'tools'];
       

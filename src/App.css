@@ -4090,6 +4090,16 @@
   box-shadow: 0 0 30px rgba(255, 176, 32, 0.4);
 }
 
+.share-btn-premium {
+  box-shadow: 0 4px 15px rgba(255, 140, 0, 0.15) !important;
+  transition: all 0.3s ease !important;
+}
+
+.share-btn-premium:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 8px 25px rgba(255, 140, 0, 0.3) !important;
+}
+
 
 
 

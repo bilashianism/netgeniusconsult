@@ -98,8 +98,7 @@ export async function onRequestPost(context) {
       }
     });
 
-    return new Response(JSON.stringify({
-      success: true,
+    const reportPayload = {
       url: targetUrl,
       title,
       description,
@@ -110,6 +109,25 @@ export async function onRequestPost(context) {
       totalImages,
       missingAltCount,
       pageSizeBytes: html.length
+    };
+
+    let reportId = null;
+    const kv = context.env.SEO_REPORTS_KV;
+    if (kv) {
+      try {
+        reportId = crypto.randomUUID();
+        await kv.put(`seo_report:${reportId}`, JSON.stringify(reportPayload), {
+          expirationTtl: 15 * 24 * 3600 // 15 days in seconds
+        });
+      } catch (kvErr) {
+        console.error('Failed to write to Cloudflare KV:', kvErr);
+      }
+    }
+
+    return new Response(JSON.stringify({
+      success: true,
+      reportId,
+      ...reportPayload
     }), {
       status: 200,
       headers: { 'Content-Type': 'application/json' }
