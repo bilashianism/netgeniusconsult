@@ -2829,11 +2829,12 @@ function B2BGrowthAuditor({ navigateTo, activeTab, setActiveTab }) {
                   )}
 
                   {/* High-End CTA Consultation Block */}
-                  <div className="cta-audit-banner-premium glass-panel highlight-border mt-8">
+                  <div className="cta-audit-banner-premium glass-panel highlight-border">
                     <div className="cta-banner-content-premium">
                       <div className="expert-avatar-wrap">
-                        <img src="public/team/sophia_taylor.png" alt="Sophia Taylor" className="expert-avatar" />
-                        <div className="expert-badge">On-Page Lead</div>
+                        <img src="/team/sophia_taylor.png" alt="Sophia Taylor" className="expert-avatar" />
+                        <span className="expert-status-dot"></span>
+                        <div className="expert-badge">SEO Director</div>
                       </div>
                       <div className="cta-banner-text">
                         <h4>Let Sophia's SEO Team Implement These Fixes</h4>
