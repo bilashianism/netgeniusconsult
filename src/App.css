@@ -2982,9 +2982,15 @@
 
 .tools-directory-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(3, 1fr);
   gap: 30px;
   margin-top: 50px;
+}
+
+@media (max-width: 992px) {
+  .tools-directory-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
 @media (max-width: 768px) {
@@ -3051,6 +3057,319 @@
   color: #fff;
   transform: translateX(-4px);
 }
+
+/* Mini SEO Crawler Styles */
+.crawler-input-card,
+.crawler-loading-card,
+.crawler-lead-card {
+  max-width: 600px;
+  margin: 40px auto;
+  padding: 40px;
+  border-radius: 24px;
+}
+
+.crawler-input-card h3,
+.crawler-lead-card h3 {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 12px;
+}
+
+.crawler-input-card p,
+.crawler-lead-card p {
+  color: var(--text-muted);
+  font-size: 1rem;
+  margin-bottom: 25px;
+  line-height: 1.5;
+}
+
+.crawler-form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.crawler-error-msg {
+  color: #ff4d4d;
+  font-size: 0.9rem;
+  font-weight: 600;
+  background: rgba(255, 77, 77, 0.05);
+  border: 1px dashed rgba(255, 77, 77, 0.2);
+  padding: 10px 15px;
+  border-radius: 8px;
+  text-align: center;
+}
+
+/* Radar Scan Loader Styles */
+.radar-scanner-wrap {
+  position: relative;
+  width: 140px;
+  height: 140px;
+  margin: 0 auto 30px;
+  border-radius: 50%;
+  background: rgba(0, 208, 255, 0.03);
+  border: 1px solid rgba(0, 208, 255, 0.15);
+  overflow: hidden;
+}
+
+.radar-beam {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 140px;
+  height: 140px;
+  background: conic-gradient(from 0deg, transparent 50%, rgba(0, 208, 255, 0.3) 100%);
+  border-radius: 50%;
+  transform-origin: 0 0;
+  transform: translate(-50%, -50%);
+  animation: radarScan 2.5s linear infinite;
+}
+
+.radar-grid {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: 
+    radial-gradient(circle, transparent 20%, rgba(0, 208, 255, 0.03) 21%, rgba(0, 208, 255, 0.03) 30%, transparent 31%, transparent 50%, rgba(0, 208, 255, 0.03) 51%, rgba(0, 208, 255, 0.03) 60%, transparent 61%),
+    linear-gradient(to right, rgba(0, 208, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0, 208, 255, 0.02) 1px, transparent 1px);
+  background-size: 100% 100%, 20px 20px, 20px 20px;
+  background-position: center;
+}
+
+.radar-pulse {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 15px;
+  height: 15px;
+  background: var(--secondary);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 15px var(--secondary);
+  animation: radarPulse 1.5s ease-out infinite;
+}
+
+.pulse-text {
+  animation: textPulse 2s ease-in-out infinite;
+}
+
+@keyframes radarScan {
+  from { transform: translate(-50%, -50%) rotate(0deg); }
+  to { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+@keyframes radarPulse {
+  0% { transform: translate(-50%, -50%) scale(0.8); opacity: 0.8; }
+  100% { transform: translate(-50%, -50%) scale(2.8); opacity: 0; }
+}
+
+@keyframes textPulse {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+/* Lead Gate Styles */
+.lead-header-icon {
+  font-size: 3.5rem;
+  margin-bottom: 15px;
+  animation: floatIcon 3s ease-in-out infinite;
+}
+
+@keyframes floatIcon {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+/* Dashboard Styles */
+.seo-report-dashboard {
+  max-width: 1000px;
+  margin: 40px auto 0;
+  text-align: left;
+}
+
+.seo-score-hero {
+  padding: 40px;
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.01);
+}
+
+.score-flex-wrap {
+  display: flex;
+  align-items: center;
+  gap: 40px;
+}
+
+@media (max-width: 768px) {
+  .score-flex-wrap {
+    flex-direction: column;
+    text-align: center;
+    gap: 25px;
+  }
+}
+
+.score-circle-box {
+  width: 130px;
+  height: 130px;
+  border-radius: 50%;
+  border: 8px solid transparent;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.15);
+  box-shadow: inset 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.score-num {
+  font-size: 2.8rem;
+  font-weight: 800;
+  line-height: 1.1;
+}
+
+.score-label {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.score-text-box h3 {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 8px;
+}
+
+.score-text-box p {
+  color: var(--text-muted);
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+/* Audit Items Details */
+.audit-item-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+  background: rgba(255, 255, 255, 0.01);
+  border: 1px solid rgba(255, 255, 255, 0.03);
+  padding: 20px;
+  border-radius: 16px;
+}
+
+.audit-status-badge {
+  flex-shrink: 0;
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.audit-item-info {
+  flex-grow: 1;
+}
+
+.audit-item-info strong {
+  display: block;
+  font-size: 1rem;
+  color: #fff;
+  margin-bottom: 6px;
+}
+
+.meta-preview-text {
+  background: rgba(0, 0, 0, 0.15);
+  padding: 10px 14px;
+  border-radius: 8px;
+  color: var(--secondary);
+  font-family: monospace;
+  font-size: 0.85rem;
+  margin: 6px 0 8px;
+  word-break: break-all;
+}
+
+.audit-guideline {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.audit-headers-list {
+  list-style: none;
+  padding-left: 0;
+  margin: 8px 0 0;
+}
+
+.audit-headers-list li {
+  font-family: monospace;
+  font-size: 0.85rem;
+  color: #c4d7ec;
+  padding: 6px 10px;
+  background: rgba(255,255,255,0.02);
+  border-radius: 6px;
+  margin-bottom: 5px;
+  border-left: 3px solid var(--secondary);
+}
+
+.h2-preview-scroll {
+  max-height: 160px;
+  overflow-y: auto;
+  padding-right: 5px;
+}
+
+.text-red {
+  color: #ff4d4d;
+  font-size: 0.9rem;
+}
+
+.text-orange {
+  color: #E17A00;
+  font-size: 0.9rem;
+}
+
+.text-green {
+  color: #10B981;
+  font-size: 0.9rem;
+}
+
+/* Call to Action Banner */
+.cta-audit-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 30px 40px;
+  border-radius: 20px;
+  background: linear-gradient(135deg, rgba(0, 208, 255, 0.05) 0%, rgba(255, 255, 255, 0.01) 100%);
+  gap: 30px;
+}
+
+@media (max-width: 768px) {
+  .cta-audit-banner {
+    flex-direction: column;
+    text-align: center;
+    padding: 30px;
+  }
+}
+
+.cta-banner-content h4 {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 8px;
+}
+
+.cta-banner-content p {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  line-height: 1.5;
+  margin: 0;
+}
+
 
 
 

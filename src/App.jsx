@@ -1568,6 +1568,16 @@ function B2BGrowthAuditor({ navigateTo, activeTab, setActiveTab }) {
   const [schemaSubmitted, setSchemaSubmitted] = useState(false);
   const [isSchemaSending, setIsSchemaSending] = useState(false);
 
+  // Mini SEO Crawler States
+  const [crawlUrl, setCrawlUrl] = useState('');
+  const [crawlLoading, setCrawlLoading] = useState(false);
+  const [crawlError, setCrawlError] = useState(null);
+  const [crawlResult, setCrawlResult] = useState(null);
+  const [crawlLeadForm, setCrawlLeadForm] = useState({ name: '', email: '' });
+  const [isCrawlLocked, setIsCrawlLocked] = useState(true);
+  const [crawlLeadSubmitted, setCrawlLeadSubmitted] = useState(false);
+  const [isCrawlSending, setIsCrawlSending] = useState(false);
+
   // Auditor Calculations
   const getBounceProbability = (s) => {
     if (s < 1.0) return 0.10;
@@ -1717,6 +1727,97 @@ function B2BGrowthAuditor({ navigateTo, activeTab, setActiveTab }) {
     }
   };
 
+  // Mini SEO Crawler Logic
+  const getCrawlLimitStatus = () => {
+    try {
+      const today = new Date().toDateString();
+      const stored = localStorage.getItem('ng_crawl_limit');
+      if (!stored) {
+        return { count: 0, date: today, limitReached: false };
+      }
+      const data = JSON.parse(stored);
+      if (data.date !== today) {
+        return { count: 0, date: today, limitReached: false };
+      }
+      return { count: data.count, date: data.date, limitReached: data.count >= 2 };
+    } catch (e) {
+      return { count: 0, date: '', limitReached: false };
+    }
+  };
+
+  const incrementCrawlCount = () => {
+    try {
+      const today = new Date().toDateString();
+      const status = getCrawlLimitStatus();
+      const newCount = status.count + 1;
+      localStorage.setItem('ng_crawl_limit', JSON.stringify({ count: newCount, date: today }));
+    } catch (e) {
+      // Ignore storage errors
+    }
+  };
+
+  const handleCrawlSubmit = async (e) => {
+    e.preventDefault();
+    setCrawlError(null);
+    setCrawlResult(null);
+    setIsCrawlLocked(true);
+    setCrawlLeadSubmitted(false);
+
+    // 1. Check daily limit
+    const limitStatus = getCrawlLimitStatus();
+    if (limitStatus.limitReached) {
+      setCrawlError("Daily limit reached. You can scan up to 2 websites per day. To get deeper audits, please contact us.");
+      return;
+    }
+
+    if (!crawlUrl.trim()) {
+      setCrawlError("Please enter a valid website URL.");
+      return;
+    }
+
+    setCrawlLoading(true);
+    try {
+      const res = await fetch('/api/seo-crawler', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url: crawlUrl })
+      });
+      const data = await res.json();
+      if (data.success) {
+        setCrawlResult(data);
+        incrementCrawlCount(); // Increment limit count on successful crawl
+      } else {
+        setCrawlError(data.error || "Failed to crawl the website. Please check the URL.");
+      }
+    } catch (err) {
+      setCrawlError("Network connection error. Please try again later.");
+    } finally {
+      setCrawlLoading(false);
+    }
+  };
+
+  const handleCrawlLeadSubmit = async (e) => {
+    e.preventDefault();
+    setIsCrawlSending(true);
+    try {
+      await trackServerLead({
+        name: crawlLeadForm.name,
+        email: crawlLeadForm.email,
+        phone: 'N/A',
+        service: 'seo',
+        message: `SEO Crawler Lead: Website: ${crawlResult.url}. Size: ${crawlResult.pageSizeBytes} bytes. H1s: ${crawlResult.h1s.length}. Images missing alt: ${crawlResult.missingAltCount}`
+      });
+      setCrawlLeadSubmitted(true);
+      setIsCrawlLocked(false); // Unlock the report card!
+    } catch (err) {
+      console.error(err);
+      setCrawlLeadSubmitted(true);
+      setIsCrawlLocked(false); // Unlock even on error so user is not blocked
+    } finally {
+      setIsCrawlSending(false);
+    }
+  };
+
   return (
     <section className="tools-page section-padding animate-float">
       <div className="container">
@@ -1740,10 +1841,17 @@ function B2BGrowthAuditor({ navigateTo, activeTab, setActiveTab }) {
               </div>
 
               <div className="tool-directory-card glass-panel highlight-hover" onClick={() => setActiveTab('schema')}>
-                <div className="tool-card-icon">🔍</div>
+                <div className="tool-card-icon">⚙️</div>
                 <h3>Google Schema JSON-LD Generator</h3>
                 <p>Generate clean, validation-ready structured data markup (Organization, Local Business, and FAQs) to boost rich search results and organic visibility on Google.</p>
                 <button className="btn btn-secondary mt-6 w-full">Launch Generator ➔</button>
+              </div>
+
+              <div className="tool-directory-card glass-panel highlight-hover" onClick={() => setActiveTab('crawler')}>
+                <div className="tool-card-icon">🔍</div>
+                <h3>Mini SEO Site Crawler & Auditor</h3>
+                <p>Crawl your website homepage in real-time to analyze on-page SEO issues, check meta headers, heading structures, and find images missing alt text.</p>
+                <button className="btn btn-secondary mt-6 w-full">Launch Crawler ➔</button>
               </div>
             </div>
           </div>
@@ -2181,6 +2289,269 @@ function B2BGrowthAuditor({ navigateTo, activeTab, setActiveTab }) {
                 )}
               </div>
             </div>
+          </div>
+        )}
+
+        {activeTab === 'crawler' && (
+          <div>
+            <button className="back-to-tools-btn" onClick={() => setActiveTab('directory')}>
+              ← Back to Tools Directory
+            </button>
+            
+            <div className="section-header text-center">
+              <span className="badge">SEO Site Crawler</span>
+              <h2>Mini SEO Site Crawler & Auditor</h2>
+              <p className="section-subtitle">
+                Enter your website URL below to run a real-time, on-page search engine optimization audit.
+              </p>
+            </div>
+
+            {/* Step 1: Input URL State */}
+            {!crawlResult && !crawlLoading && (
+              <div className="crawler-input-card glass-panel text-center">
+                <h3>Start Free Website Scan</h3>
+                <p>Verify your headings, alt tags, metadata lengths, and discover blocking SEO errors instantly.</p>
+                <form onSubmit={handleCrawlSubmit} className="crawler-form">
+                  <input 
+                    type="text" 
+                    placeholder="Enter Website URL (e.g. example.com) *" 
+                    required 
+                    className="form-input-tools"
+                    value={crawlUrl}
+                    onChange={(e) => setCrawlUrl(e.target.value)}
+                  />
+                  {crawlError && <p className="crawler-error-msg mt-3">{crawlError}</p>}
+                  <button type="submit" className="btn btn-primary w-full mt-4">
+                    Run SEO Audit ➔
+                  </button>
+                </form>
+              </div>
+            )}
+
+            {/* Step 2: Crawl Loading Animation */}
+            {crawlLoading && (
+              <div className="crawler-loading-card glass-panel text-center">
+                <div className="radar-scanner-wrap">
+                  <div className="radar-beam" />
+                  <div className="radar-grid" />
+                  <div className="radar-pulse" />
+                </div>
+                <h3>Crawling Website...</h3>
+                <p className="pulse-text">Fetching HTML structure, scanning images, and auditing metadata tags.</p>
+              </div>
+            )}
+
+            {/* Step 3: Lead Gate (Crawl Completed but Locked) */}
+            {crawlResult && isCrawlLocked && (
+              <div className="crawler-lead-card glass-panel text-center">
+                <div className="lead-header-icon">🎉</div>
+                <h3>✓ Crawl Complete for {crawlResult.url.replace(/^https?:\/\//i, '')}!</h3>
+                <p className="mb-6">We identified on-page SEO issues on your website. Enter your email below to instantly view your health score and unlock the detailed report.</p>
+                
+                <form onSubmit={handleCrawlLeadSubmit} className="audit-lead-form max-w-md mx-auto">
+                  <div className="form-group">
+                    <input 
+                      type="text" 
+                      placeholder="Your Name *" 
+                      required 
+                      className="form-input-tools"
+                      value={crawlLeadForm.name}
+                      onChange={(e) => setCrawlLeadForm(prev => ({ ...prev, name: e.target.value }))}
+                    />
+                  </div>
+                  <div className="form-group mt-3">
+                    <input 
+                      type="email" 
+                      placeholder="Your Email Address *" 
+                      required 
+                      className="form-input-tools"
+                      value={crawlLeadForm.email}
+                      onChange={(e) => setCrawlLeadForm(prev => ({ ...prev, email: e.target.value }))}
+                    />
+                  </div>
+                  <button type="submit" className="btn btn-primary w-full mt-4" disabled={isCrawlSending}>
+                    {isCrawlSending ? 'Unlocking Report...' : 'Reveal My Audit Report ➔'}
+                  </button>
+                </form>
+              </div>
+            )}
+
+            {/* Step 4: SEO Report Dashboard (Unlocked) */}
+            {crawlResult && !isCrawlLocked && (() => {
+              // Calculate Health Score
+              let score = 100;
+              if (!crawlResult.title) score -= 20;
+              else if (crawlResult.title.length < 40 || crawlResult.title.length > 70) score -= 5;
+
+              if (!crawlResult.description) score -= 20;
+              else if (crawlResult.description.length < 100 || crawlResult.description.length > 165) score -= 5;
+
+              if (!crawlResult.canonical) score -= 10;
+              if (crawlResult.h1s.length === 0) score -= 15;
+              else if (crawlResult.h1s.length > 1) score -= 5;
+
+              if (crawlResult.missingAltCount > 0) {
+                score -= Math.min(15, crawlResult.missingAltCount * 2);
+              }
+              if (!crawlResult.hasSchema) score -= 10;
+
+              const finalScore = Math.max(10, score);
+              const scoreColor = finalScore >= 80 ? '#10B981' : finalScore >= 50 ? '#E17A00' : '#ff4d4d';
+
+              return (
+                <div className="seo-report-dashboard animate-fade-in">
+                  <div className="seo-score-hero glass-panel highlight-border">
+                    <div className="score-flex-wrap">
+                      <div className="score-circle-box" style={{ borderColor: scoreColor }}>
+                        <span className="score-num" style={{ color: scoreColor }}>{finalScore}</span>
+                        <span className="score-label">Health Score</span>
+                      </div>
+                      <div className="score-text-box">
+                        <h3>SEO Assessment: {finalScore >= 80 ? 'Good' : finalScore >= 50 ? 'Needs Work' : 'Critical Warning'}</h3>
+                        <p>We crawled <strong>{crawlResult.url}</strong>. Our parser detected {crawlResult.h1s.length === 0 ? 'missing headers' : 'standard headers'}, {crawlResult.missingAltCount} accessibility issues, and analysed meta metrics.</p>
+                        <button className="btn btn-secondary mt-3" onClick={() => { setCrawlResult(null); setCrawlUrl(''); }}>Scan Another Website</button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="auditor-grid mt-8">
+                    {/* Panel 1: Meta Tags */}
+                    <div className="auditor-card glass-panel">
+                      <h3>Meta Headers Audit</h3>
+                      
+                      <div className="audit-item-row">
+                        <div className="audit-status-badge" style={{ background: crawlResult.title ? (crawlResult.title.length >= 40 && crawlResult.title.length <= 70 ? 'rgba(16, 185, 129, 0.1)' : 'rgba(225, 122, 0, 0.1)') : 'rgba(255, 77, 77, 0.1)' }}>
+                          {crawlResult.title ? (crawlResult.title.length >= 40 && crawlResult.title.length <= 70 ? '✅ Perfect' : '⚠️ Warning') : '❌ Missing'}
+                        </div>
+                        <div className="audit-item-info">
+                          <strong>Page Title ({crawlResult.title.length} chars)</strong>
+                          <p className="meta-preview-text">"{crawlResult.title || 'No Title Tag Found!'}"</p>
+                          <span className="audit-guideline">Ideal length is 40-70 characters.</span>
+                        </div>
+                      </div>
+
+                      <div className="audit-item-row mt-4">
+                        <div className="audit-status-badge" style={{ background: crawlResult.description ? (crawlResult.description.length >= 100 && crawlResult.description.length <= 165 ? 'rgba(16, 185, 129, 0.1)' : 'rgba(225, 122, 0, 0.1)') : 'rgba(255, 77, 77, 0.1)' }}>
+                          {crawlResult.description ? (crawlResult.description.length >= 100 && crawlResult.description.length <= 165 ? '✅ Perfect' : '⚠️ Warning') : '❌ Missing'}
+                        </div>
+                        <div className="audit-item-info">
+                          <strong>Meta Description ({crawlResult.description.length} chars)</strong>
+                          <p className="meta-preview-text">"{crawlResult.description || 'No Meta Description Found!'}"</p>
+                          <span className="audit-guideline">Ideal length is 100-165 characters.</span>
+                        </div>
+                      </div>
+
+                      <div className="audit-item-row mt-4">
+                        <div className="audit-status-badge" style={{ background: crawlResult.canonical ? 'rgba(16, 185, 129, 0.1)' : 'rgba(255, 77, 77, 0.1)' }}>
+                          {crawlResult.canonical ? '✅ Set' : '❌ Missing'}
+                        </div>
+                        <div className="audit-item-info">
+                          <strong>Canonical Link</strong>
+                          <p className="meta-preview-text">{crawlResult.canonical || 'No Canonical Tag Found!'}</p>
+                          <span className="audit-guideline">Canonical tags prevent duplicate content penalties.</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Panel 2: Headings & Media */}
+                    <div className="auditor-card glass-panel">
+                      <h3>Page Layout & Headings</h3>
+
+                      <div className="audit-item-row">
+                        <div className="audit-status-badge" style={{ background: crawlResult.h1s.length === 1 ? 'rgba(16, 185, 129, 0.1)' : crawlResult.h1s.length > 1 ? 'rgba(225, 122, 0, 0.1)' : 'rgba(255, 77, 77, 0.1)' }}>
+                          {crawlResult.h1s.length === 1 ? '✅ Correct' : crawlResult.h1s.length > 1 ? '⚠️ Multi' : '❌ Missing'}
+                        </div>
+                        <div className="audit-item-info">
+                          <strong>H1 Header (Count: {crawlResult.h1s.length})</strong>
+                          {crawlResult.h1s.length > 0 ? (
+                            <ul className="audit-headers-list">
+                              {crawlResult.h1s.map((h1, i) => <li key={i}>"{h1}"</li>)}
+                            </ul>
+                          ) : (
+                            <p className="text-red">Critical: Every page must have exactly one H1 tag.</p>
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="audit-item-row mt-4">
+                        <div className="audit-status-badge" style={{ background: 'rgba(255, 255, 255, 0.05)' }}>
+                          ℹ️ Info
+                        </div>
+                        <div className="audit-item-info">
+                          <strong>H2 Subheadings (Count: {crawlResult.h2s.length})</strong>
+                          {crawlResult.h2s.length > 0 ? (
+                            <div className="h2-preview-scroll">
+                              <ul className="audit-headers-list">
+                                {crawlResult.h2s.slice(0, 4).map((h2, i) => <li key={i}>"{h2}"</li>)}
+                                {crawlResult.h2s.length > 4 && <li>... and {crawlResult.h2s.length - 4} more.</li>}
+                              </ul>
+                            </div>
+                          ) : (
+                            <p>No H2 headers detected.</p>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="auditor-grid mt-6">
+                    {/* Panel 3: Images */}
+                    <div className="auditor-card glass-panel">
+                      <h3>Accessibility & Images</h3>
+                      
+                      <div className="audit-item-row">
+                        <div className="audit-status-badge" style={{ background: crawlResult.missingAltCount === 0 ? 'rgba(16, 185, 129, 0.1)' : 'rgba(225, 122, 0, 0.1)' }}>
+                          {crawlResult.missingAltCount === 0 ? '✅ Perfect' : '⚠️ Check'}
+                        </div>
+                        <div className="audit-item-info">
+                          <strong>Image Alt Tags</strong>
+                          <p>Detected <strong>{crawlResult.totalImages} images</strong> in HTML source.</p>
+                          {crawlResult.missingAltCount > 0 ? (
+                            <p className="text-orange">⚠️ <strong>{crawlResult.missingAltCount} images</strong> are missing "alt" attributes. This reduces Google Image Search indexation.</p>
+                          ) : (
+                            <p className="text-green">All images have alt descriptions!</p>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Panel 4: Tech & Structured Data */}
+                    <div className="auditor-card glass-panel">
+                      <h3>Technical SEO Checks</h3>
+
+                      <div className="audit-item-row">
+                        <div className="audit-status-badge" style={{ background: crawlResult.hasSchema ? 'rgba(16, 185, 129, 0.1)' : 'rgba(225, 122, 0, 0.1)' }}>
+                          {crawlResult.hasSchema ? '✅ Active' : '⚠️ Missing'}
+                        </div>
+                        <div className="audit-item-info">
+                          <strong>Structured Data Schemas</strong>
+                          <p>{crawlResult.hasSchema ? 'JSON-LD schema detected in head markup.' : 'No schema detected. Your competitors are likely using schemas to display review stars & FAQs.'}</p>
+                        </div>
+                      </div>
+
+                      <div className="audit-item-row mt-4">
+                        <div className="audit-status-badge" style={{ background: 'rgba(255, 255, 255, 0.05)' }}>
+                          📊 Stats
+                        </div>
+                        <div className="audit-item-info">
+                          <strong>HTML Page Size</strong>
+                          <p>Total page weight: <strong>{(crawlResult.pageSizeBytes / 1024).toFixed(1)} KB</strong>.</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Call-to-Action Booking Block */}
+                  <div className="cta-audit-banner glass-panel highlight-border mt-8">
+                    <div className="cta-banner-content">
+                      <h4>Let Sophia's SEO Team Fix Your Errors</h4>
+                      <p>Our Head of SEO (Sophia) has compiled these results. Book a free 15-minute consultation to review the findings and learn how our custom React edge migration resolves these errors forever.</p>
+                    </div>
+                    <button className="btn btn-primary" onClick={() => navigateTo('contact')}>Book Free SEO Review</button>
+                  </div>
+                </div>
+              );
+            })()}
           </div>
         )}
       </div>
