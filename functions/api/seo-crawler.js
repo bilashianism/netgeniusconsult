@@ -15,9 +15,9 @@ export async function onRequestPost(context) {
       targetUrl = 'https://' + targetUrl;
     }
 
-    // Set a 15-second fetch timeout
+    // Set a 20-second fetch timeout
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 15000);
+    const timeoutId = setTimeout(() => controller.abort(), 20000);
 
     const response = await fetch(targetUrl, {
       signal: controller.signal,
@@ -118,7 +118,7 @@ export async function onRequestPost(context) {
   } catch (err) {
     let errorMsg = 'An error occurred while crawling the website.';
     if (err.name === 'AbortError') {
-      errorMsg = 'Target website took too long to load. Request timed out after 15 seconds. Please make sure the domain is active and loading.';
+      errorMsg = 'Target website took too long to load. Request timed out after 20 seconds. Please make sure the domain is active and loading.';
     } else if (err.message.includes('fetch failed')) {
       errorMsg = 'Could not resolve domain name. Check the website URL and try again.';
     } else {

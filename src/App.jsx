@@ -2321,7 +2321,28 @@ function B2BGrowthAuditor({ navigateTo, activeTab, setActiveTab }) {
                     value={crawlUrl}
                     onChange={(e) => setCrawlUrl(e.target.value)}
                   />
-                  {crawlError && <p className="crawler-error-msg mt-3">{crawlError}</p>}
+                  {crawlError && (
+                    <div className="crawler-error-wrapper mt-3 text-left">
+                      {crawlError.includes('timed out') || crawlError.includes('too long') ? (
+                        <div className="performance-warning-card glass-panel highlight-border p-5" style={{ padding: '25px', textAlign: 'left', background: 'rgba(255, 77, 77, 0.02)', border: '1px solid rgba(255, 77, 77, 0.15)' }}>
+                          <h4 className="text-red flex items-center gap-2" style={{ color: '#ff4d4d', fontWeight: '700', fontSize: '1.1rem', margin: '0 0 10px 0' }}>
+                            ⚠️ Critical Load Speed Alert
+                          </h4>
+                          <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', lineHeight: '1.6', margin: '0 0 15px 0' }}>
+                            This website took more than 20 seconds to respond. A slow-loading website is heavily penalized by Google search engines and typically loses up to 90% of mobile visitors.
+                          </p>
+                          <div className="speed-pitch-box" style={{ background: 'rgba(255, 176, 32, 0.05)', border: '1px dashed rgba(255, 176, 32, 0.2)', padding: '12px 15px', borderRadius: '8px', fontSize: '0.85rem', color: '#ffb020', margin: '0 0 20px 0', lineHeight: '1.5' }}>
+                            <strong>Why did it time out?</strong> LiteSpeed page compilation or database queries are choking. Our high-performance edge-rendered React solutions load in under 0.4 seconds.
+                          </div>
+                          <button className="btn btn-secondary w-full" style={{ fontSize: '0.85rem', padding: '10px 20px', width: '100%', boxSizing: 'border-box' }} onClick={(e) => { e.preventDefault(); navigateTo('contact'); }}>
+                            ⚡ Request Free Speed Audit & Consultation
+                          </button>
+                        </div>
+                      ) : (
+                        <p className="crawler-error-msg mt-3">{crawlError}</p>
+                      )}
+                    </div>
+                  )}
                   <button type="submit" className="btn btn-primary w-full mt-4">
                     Run SEO Audit ➔
                   </button>
