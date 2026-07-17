@@ -3587,6 +3587,23 @@ function App() {
                   </div>
                   
                   <div className="blog-grid">
+                    <article className="blog-card" style={{ cursor: 'pointer' }} onClick={() => setSelectedPostId('b2b-core-web-vitals-audit')}>
+                      <div className="blog-card-body">
+                        <div className="blog-card-meta">
+                          <span className="blog-card-badge" style={{ color: '#00D0FF', background: 'rgba(0, 208, 255, 0.1)' }}>SEO & Performance</span>
+                          <span>July 18, 2026</span>
+                        </div>
+                        <h3 className="blog-card-title">How to Run a Core Web Vitals Audit for Your B2B Website</h3>
+                        <p className="blog-card-excerpt">
+                          Core Web Vitals are primary Google ranking factors. Learn how to audit your site's LCP, FID, and CLS metrics using Lighthouse, Chrome DevTools, and page speed tracing.
+                        </p>
+                        <div className="blog-card-footer">
+                          <span>Read full article →</span>
+                          <span>7 min read</span>
+                        </div>
+                      </div>
+                    </article>
+
                     <article className="blog-card" style={{ cursor: 'pointer' }} onClick={() => setSelectedPostId('b2b-local-seo-schema')}>
                       <div className="blog-card-body">
                         <div className="blog-card-meta">
@@ -4121,7 +4138,87 @@ function App() {
                         </div>
                       </div>
                     </div>
-                  )}`
+                  )}
+
+                  {selectedPostId === 'b2b-core-web-vitals-audit' && (
+                    <div className="article-detail-container">
+                      <button className="back-to-blog" onClick={() => setSelectedPostId(null)}>
+                        ← Back to all articles
+                      </button>
+                      
+                      <header className="article-header">
+                        <div className="article-meta">
+                          <span className="blog-card-badge" style={{ color: '#00D0FF', background: 'rgba(0, 208, 255, 0.1)' }}>SEO & Performance</span>
+                          <span>Published: July 18, 2026</span>
+                          <span>• 7 min read</span>
+                        </div>
+                        <h1 className="article-title">How to Run a Core Web Vitals Audit for Your B2B Website</h1>
+                        
+                        <div className="article-author-info">
+                          <img 
+                            src="/team/sophia_taylor.png" 
+                            alt="Sophia Taylor" 
+                            className="article-author-avatar" 
+                          />
+                          <div>
+                            <div className="article-author-name">Sophia Taylor</div>
+                            <div className="article-author-role">Head of Search Engine Optimization</div>
+                          </div>
+                        </div>
+                      </header>
+                      
+                      <div className="article-body">
+                        <p>
+                          For B2B websites, visitor experience translates directly to business credibility. Google's Core Web Vitals (CWV) are a set of three specific web speed and user interaction metrics that Google uses to evaluate a page's user experience. Since Google uses these metrics as ranking factors, passing the Core Web Vitals assessment is essential to maintaining search visibility.
+                        </p>
+                        <p>
+                          This guide provides a step-by-step framework to audit and optimize your site's performance.
+                        </p>
+                        
+                        <h2>1. The Three Core Web Vitals Metrics: What to Measure</h2>
+                        <p>
+                          To run a successful audit, you must understand the three core metrics Google measures:
+                        </p>
+                        <ul>
+                          <li><strong>Largest Contentful Paint (LCP)</strong>: Measures loading performance. To provide a good user experience, LCP should occur within 2.5 seconds of when the page first starts loading.</li>
+                          <li><strong>First Input Delay (FID) / Interaction to Next Paint (INP)</strong>: Measures page responsiveness. Pages should have an INP of 200 milliseconds or less to ensure a snappy user experience.</li>
+                          <li><strong>Cumulative Layout Shift (CLS)</strong>: Measures visual stability. Pages should maintain a CLS score of less than 0.1 to prevent layout elements from shifting unexpectedly while loading.</li>
+                        </ul>
+
+                        <h2>2. Step-by-Step Audit Workflow</h2>
+                        <p>
+                          Follow this sequence using Google's free tools to audit your corporate pages:
+                        </p>
+                        <ol>
+                          <li><strong>Run a Lighthouse Scan</strong>: Open your site, press F12 to load Chrome DevTools, navigate to the Lighthouse tab, and run a mobile audit. Look for specific resource opportunities (like unoptimized images or render-blocking JS).</li>
+                          <li><strong>Inspect Field Data in Google Search Console</strong>: Navigate to GSC ➔ Core Web Vitals. GSC gathers real-world data from actual Chrome users, grouping pages into "Poor", "Needs Improvement", or "Good".</li>
+                          <li><strong>Drill Down with PageSpeed Insights</strong>: PageSpeed Insights combines both Lab Data (simulated scans) and Field Data (real users) to give you diagnostic suggestions for specific speed issues.</li>
+                        </ol>
+
+                        <blockquote>
+                          "Passing Google's Core Web Vitals requires a clean code structure. A single unoptimized JavaScript library can drop your mobile performance score from a Good rating down to Poor, resulting in immediate organic traffic penalties."
+                        </blockquote>
+
+                        <h2>3. Common B2B Bottlenecks and How to Fix Them</h2>
+                        <p>
+                          Most B2B websites fail the Core Web Vitals audit due to three common architectural flaws:
+                        </p>
+                        <ul>
+                          <li><strong>Giant Hero Images</strong>: Hero banners are often saved as heavy, uncompressed PNG files, inflating LCP. Fix this by converting images to WebP format and using modern responsive sizes.</li>
+                          <li><strong>Unsized Layout Containers</strong>: If ad placeholders or banner images do not declare explicit width and height dimensions, the page layout jumps as they load, causing high CLS. Declare width/height on all elements.</li>
+                          <li><strong>Render-Blocking JavaScript</strong>: Heavy tracking pixels and external widgets block browser rendering, killing loading speed. Solve this by deferring non-essential scripts.</li>
+                        </ul>
+                        
+                        <div className="service-detail-cta glass-panel mt-12" style={{ padding: '30px', marginTop: '40px' }}>
+                          <h3>Need Help Passing Core Web Vitals?</h3>
+                          <p>Use our free Website Speed Auditor tool to scan your pages, or book a free consult to let our specialists optimize your loading speeds under 0.8 seconds.</p>
+                          <button className="btn btn-primary mt-4" onClick={() => navigateTo('tools')}>
+                            Open Website Auditor Tool
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </>
               )}
             </div>
