@@ -3587,6 +3587,23 @@ function App() {
                   </div>
                   
                   <div className="blog-grid">
+                    <article className="blog-card" style={{ cursor: 'pointer' }} onClick={() => setSelectedPostId('lighthouse-100-cloudflare')}>
+                      <div className="blog-card-body">
+                        <div className="blog-card-meta">
+                          <span className="blog-card-badge" style={{ color: '#8B5CF6', background: 'rgba(139, 92, 246, 0.1)' }}>Engineering & Performance</span>
+                          <span>July 21, 2026</span>
+                        </div>
+                        <h3 className="blog-card-title">The Developer's Guide to Lighthouse 100 on Cloudflare Pages</h3>
+                        <p className="blog-card-excerpt">
+                          Learn how combining pre-rendered React static builds with Cloudflare's global edge network guarantees a perfect 100/100 Lighthouse performance score and maximum Google ranking power.
+                        </p>
+                        <div className="blog-card-footer">
+                          <span>Read full article →</span>
+                          <span>6 min read</span>
+                        </div>
+                      </div>
+                    </article>
+
                     <article className="blog-card" style={{ cursor: 'pointer' }} onClick={() => setSelectedPostId('b2b-core-web-vitals-audit')}>
                       <div className="blog-card-body">
                         <div className="blog-card-meta">
@@ -4214,6 +4231,117 @@ function App() {
                           <p>Use our free Website Speed Auditor tool to scan your pages, or book a free consult to let our specialists optimize your loading speeds under 0.8 seconds.</p>
                           <button className="btn btn-primary mt-4" onClick={() => navigateTo('tools')}>
                             Open Website Auditor Tool
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {selectedPostId === 'lighthouse-100-cloudflare' && (
+                    <div className="article-detail-container">
+                      <button className="back-to-blog" onClick={() => setSelectedPostId(null)}>
+                        ← Back to all articles
+                      </button>
+                      
+                      <header className="article-header">
+                        <div className="article-meta">
+                          <span className="blog-card-badge" style={{ color: '#8B5CF6', background: 'rgba(139, 92, 246, 0.1)' }}>Engineering & Performance</span>
+                          <span>Published: July 21, 2026</span>
+                          <span>• 6 min read</span>
+                        </div>
+                        <h1 className="article-title">The Developer's Guide to Lighthouse 100 on Cloudflare Pages</h1>
+                        
+                        <div className="article-author-info">
+                          <img 
+                            src="/team/sophia_taylor.png" 
+                            alt="Sophia Taylor" 
+                            className="article-author-avatar" 
+                          />
+                          <div>
+                            <div className="article-author-name">Sophia Taylor</div>
+                            <div className="article-author-role">Head of Search Engine Optimization</div>
+                          </div>
+                        </div>
+                      </header>
+                      
+                      <div className="article-body">
+                        <p>
+                          Achieving a perfect 100/100 score on Google Lighthouse is the holy grail for modern web engineering. Beyond aesthetic satisfaction, a 100 performance score guarantees that Google search crawlers experience zero rendering delay, directly boosting organic ranking velocity.
+                        </p>
+                        <p>
+                          In this guide, we outline the exact architecture we use at NetGenius Consult to deliver zero-latency static builds deployed on Cloudflare's edge network.
+                        </p>
+                        
+                        <h2>1. Why Cloudflare Pages Beats Traditional Hosting</h2>
+                        <p>
+                          Traditional web servers rely on centralized hosting locations. When a user in London or Dhaka accesses a site hosted on an origin server in Virginia, network packet round-trips introduce hundreds of milliseconds of latency.
+                        </p>
+                        <p>
+                          Cloudflare Pages flips this model:
+                        </p>
+                        <ul>
+                          <li><strong>Global CDN Caching</strong>: Pre-rendered static assets are distributed across 300+ edge data centers worldwide.</li>
+                          <li><strong>Sub-50ms TTFB</strong>: Every visitor receives your compiled page from their nearest local edge node.</li>
+                          <li><strong>Zero Server Load</strong>: Since no dynamic database scripts are executed on load, server crash risks are completely eliminated.</li>
+                        </ul>
+
+                        <h2>2. Key Architectural Steps for a 100 Score</h2>
+                        <p>
+                          To eliminate render blocking and achieve a 100 Lighthouse rating, follow these core development rules:
+                        </p>
+                        <ol>
+                          <li><strong>Eliminate Unused JavaScript</strong>: Use Vite and React tree-shaking to strip out unused dependencies during build time.</li>
+                          <li><strong>Optimize Font Delivery</strong>: Preload Google Fonts or self-host WebFont files using <code>font-display: swap</code> to avoid FOIT (Flash of Invisible Text).</li>
+                          <li><strong>Inline Critical CSS</strong>: Keep core layout styles inlined or bundled tightly so page painting begins immediately.</li>
+                          <li><strong>Lazy Load Below-the-Fold Assets</strong>: Defer non-critical images and background scripts using native <code>loading="lazy"</code> attributes.</li>
+                        </ol>
+
+                        <blockquote>
+                          "A 100 Lighthouse score is not achieved by tweaking plugins on a bloated CMS. It is achieved by building a clean, modern React asset tree and serving it on an edge-native CDN."
+                        </blockquote>
+
+                        <h2>3. Performance Metric Targets</h2>
+                        <p>
+                          Here are the benchmark targets required for a 100 rating on mobile:
+                        </p>
+                        
+                        <table>
+                          <thead>
+                            <tr>
+                              <th>Lighthouse Metric</th>
+                              <th>Target Threshold</th>
+                              <th>NetGenius Benchmark</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr>
+                              <td><strong>First Contentful Paint (FCP)</strong></td>
+                              <td>&lt; 1.8 seconds</td>
+                              <td><strong>0.3 seconds</strong></td>
+                            </tr>
+                            <tr>
+                              <td><strong>Largest Contentful Paint (LCP)</strong></td>
+                              <td>&lt; 2.5 seconds</td>
+                              <td><strong>0.4 seconds</strong></td>
+                            </tr>
+                            <tr>
+                              <td><strong>Total Blocking Time (TBT)</strong></td>
+                              <td>&lt; 200 milliseconds</td>
+                              <td><strong>0 milliseconds</strong></td>
+                            </tr>
+                            <tr>
+                              <td><strong>Cumulative Layout Shift (CLS)</strong></td>
+                              <td>&lt; 0.1</td>
+                              <td><strong>0.00</strong></td>
+                            </tr>
+                          </tbody>
+                        </table>
+
+                        <div className="service-detail-cta glass-panel mt-12" style={{ padding: '30px', marginTop: '40px' }}>
+                          <h3>Audit Your Lighthouse Score Right Now</h3>
+                          <p>Want to see how your website stacks up against our sub-0.4s benchmark? Use our free SEO & Speed Crawler tool to scan your domain instantly.</p>
+                          <button className="btn btn-primary mt-4" onClick={() => navigateTo('tools')}>
+                            Run Free Speed Audit
                           </button>
                         </div>
                       </div>
