@@ -3587,6 +3587,23 @@ function App() {
                   </div>
                   
                   <div className="blog-grid">
+                    <article className="blog-card" style={{ cursor: 'pointer' }} onClick={() => setSelectedPostId('b2b-ppc-international')}>
+                      <div className="blog-card-body">
+                        <div className="blog-card-meta">
+                          <span className="blog-card-badge" style={{ color: '#E17A00', background: 'rgba(225, 122, 0, 0.1)' }}>Paid Ads & PPC</span>
+                          <span>July 24, 2026</span>
+                        </div>
+                        <h3 className="blog-card-title">B2B PPC Lead Generation: Scaling Ads in the US, UK, Canada & Ireland</h3>
+                        <p className="blog-card-excerpt">
+                          Learn how localized term adjustments, intent-targeted keywords, and server-side Conversions API integration help B2B services scale PPC campaigns internationally.
+                        </p>
+                        <div className="blog-card-footer">
+                          <span>Read full article →</span>
+                          <span>6 min read</span>
+                        </div>
+                      </div>
+                    </article>
+
                     <article className="blog-card" style={{ cursor: 'pointer' }} onClick={() => setSelectedPostId('lighthouse-100-cloudflare')}>
                       <div className="blog-card-body">
                         <div className="blog-card-meta">
@@ -4342,6 +4359,85 @@ function App() {
                           <p>Want to see how your website stacks up against our sub-0.4s benchmark? Use our free SEO & Speed Crawler tool to scan your domain instantly.</p>
                           <button className="btn btn-primary mt-4" onClick={() => navigateTo('tools')}>
                             Run Free Speed Audit
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {selectedPostId === 'b2b-ppc-international' && (
+                    <div className="article-detail-container">
+                      <button className="back-to-blog" onClick={() => setSelectedPostId(null)}>
+                        ← Back to all articles
+                      </button>
+                      
+                      <header className="article-header">
+                        <div className="article-meta">
+                          <span className="blog-card-badge" style={{ color: '#E17A00', background: 'rgba(225, 122, 0, 0.1)' }}>Paid Ads & PPC</span>
+                          <span>Published: July 24, 2026</span>
+                          <span>• 6 min read</span>
+                        </div>
+                        <h1 className="article-title">B2B PPC Lead Generation: Scaling Ads in the US, UK, Canada & Ireland</h1>
+                        
+                        <div className="article-author-info">
+                          <img 
+                            src="/team/maya_jama.png" 
+                            alt="Maya Jama" 
+                            className="article-author-avatar" 
+                          />
+                          <div>
+                            <div className="article-author-name">Maya Jama</div>
+                            <div className="article-author-role">PPC Specialist</div>
+                          </div>
+                        </div>
+                      </header>
+                      
+                      <div className="article-body">
+                        <p>
+                          For B2B professional services scaling internationally, PPC (Pay-Per-Click) is the fastest way to build a pipeline. However, launching advertising campaigns across distinct jurisdictions like the US, UK, Canada, and Ireland requires more than simply copying and pasting ad groups. It demands a localized, intent-driven strategy that respects market differences, local search variations, and customer habits.
+                        </p>
+                        <p>
+                          In this guide, we share the exact playbook we use at NetGenius Consult to scale B2B PPC campaigns across these major international markets.
+                        </p>
+                        
+                        <h2>1. Localizing B2B Ad Copy: UK vs. US vs. Canada vs. Ireland</h2>
+                        <p>
+                          Even though these markets are English-speaking, their business terminology differs significantly. To maintain high click-through rates (CTR) and quality scores:
+                        </p>
+                        <ul>
+                          <li><strong>Terminology Differences</strong>: A campaign targeting "digital marketing agency" works globally, but when bidding on service terms, use "consultancy" or "firm" in the UK and Ireland, whereas "agency" or "company" performs better in the USA and Canada.</li>
+                          <li><strong>Budgeting Symbols</strong>: Never run an ad with "starting at $500/mo" in the UK or Ireland. Always configure separate campaigns that dynamically swap currencies (£ for UK, $ for US/Canada, and € for Ireland).</li>
+                          <li><strong>Post-Click Trust</strong>: B2B clients in Canada and the UK expect strict data compliance (PIPEDA and GDPR). B2B prospects in the US prioritize speed and direct ROI stats. Highlight the appropriate credentials on your landing page.</li>
+                        </ul>
+
+                        <h2>2. B2B Search Intent: Bidding on the Right Keywords</h2>
+                        <p>
+                          B2B keywords have higher click costs than B2C. A single click for a term like "enterprise cloud security consultation" can cost £50+. To prevent budget waste:
+                        </p>
+                        <ul>
+                          <li><strong>Target Long-Tail Intent</strong>: Avoid bidding on broad terms like "cloud software". Instead, bid on high-intent long-tail phrases like "B2B CRM software for medical consulting firms".</li>
+                          <li><strong>Negative Keyword Lists</strong>: Actively build negative lists to filter out searches for "free", "jobs", "salary", or "resume", keeping your budget 100% focused on commercial corporate buyers.</li>
+                          <li><strong>LinkedIn Ads vs. Google Ads</strong>: Use Google Search to capture high-intent buyers who are actively searching for a solution today. Use LinkedIn Ads to target specific job titles (e.g. CTOs or VP of Marketing) at target accounts.</li>
+                        </ul>
+
+                        <blockquote>
+                          "When scaling B2B campaigns across London, New York, Toronto, and Dublin, localization is your greatest leverage. B2B decision-makers ignore generic, template-styled ads. They convert when your copy addresses their local market pain points, displays their local currency, and loads in under 1 second."
+                        </blockquote>
+
+                        <h2>3. The Conversions API (CAPI) Integration Requirement</h2>
+                        <p>
+                          Due to ad-blockers and privacy updates, standard browser-based tracking pixels lose up to 40% of conversion details. To optimize your budget:
+                        </p>
+                        <ul>
+                          <li><strong>Server-to-Server Tracking</strong>: Set up server-side Conversions API (CAPI) for Meta and Google Ads. This transmits lead details directly from your web server to the ad platform.</li>
+                          <li><strong>Better Algorithm Training</strong>: Server-side tracking feeds accurate lead data back to Google and Meta's algorithms, allowing them to optimize your bidding and target the highest-quality prospects.</li>
+                        </ul>
+
+                        <div className="service-detail-cta glass-panel mt-12" style={{ padding: '30px', marginTop: '40px' }}>
+                          <h3>Optimize Your Paid Ad ROI Today</h3>
+                          <p>Want to see if your landing pages are dropping leads and wasting ad budget? Run a free Speed & Auditor scan or book a strategy session with Maya Jama.</p>
+                          <button className="btn btn-primary mt-4" onClick={() => navigateTo('contact')}>
+                            Book Free Paid Ads Consult
                           </button>
                         </div>
                       </div>
